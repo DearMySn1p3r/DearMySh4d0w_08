@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARCH_SYSTEM_HIGH_RES_PRINT_UI</title>
+    <title>ARCH_SYSTEM_ULTRA_HQ_PRINT</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@100;300;500;700&display=swap');
@@ -124,7 +124,7 @@
         .download-btn-float { flex: 1; padding: 12px 25px; font-size: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--dim); color: var(--accent); font-weight: 700; letter-spacing: 2px; border-radius: 4px; transition: 0.3s; text-align: center; cursor: pointer;}
         .download-btn-float:hover { background: var(--sys-main); color: #000; border-color: var(--sys-main); }
 
-        /* --- 적성 검사 UI (전술 단말기 스타일 복구) --- */
+        /* --- 적성 검사 UI --- */
         .q-text { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 25px; line-height: 1.5; word-break: keep-all; letter-spacing: 1px;}
         .a-btn { width: 100%; text-align: left; padding: 15px 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim); color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; transition: all 0.2s ease; line-height: 1.5; word-break: keep-all; position: relative; overflow: hidden; border-radius: 2px;}
         .a-btn::before { content: '>>'; color: var(--sys-main); font-weight: bold; position: absolute; left: 15px; opacity: 0; transition: 0.2s; transform: translateX(-10px); }
@@ -143,9 +143,7 @@
         @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
         @keyframes textGlitch { 0% { transform: translate(0) } 20% { transform: translate(-1px, 1px) } 40% { transform: translate(-1px, -1px) } 60% { transform: translate(1px, 1px) } 80% { transform: translate(1px, -1px) } 100% { transform: translate(0) } }
 
-        /* =======================================================
-           📱 모바일 반응형 (MOBILE RESPONSIVE) DESIGN
-           ======================================================= */
+        /* 모바일 반응형 */
         @media (max-width: 850px) {
             body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh;}
             #main-wrapper { display: flex; flex-direction: column; height: auto; overflow: visible; }
@@ -203,7 +201,7 @@
             <div class="input-group">
                 <span class="input-label">PHOTO UPLOAD (증명사진 업로드)</span>
                 <input type="file" id="agent-photo" accept="image/*" onchange="previewPhoto(event)">
-                <span style="font-size:9px; color:var(--dim); margin-top:5px; display:block;">* 마우스 드래그(또는 화면 터치)로 이동 가능</span>
+                <span style="font-size:9px; color:var(--dim); margin-top:5px; display:block;">* 드래그 이동 및 줌. (1000px 이상 고화질 권장)</span>
             </div>
             <div class="input-group">
                 <span class="input-label">PHOTO ZOOM (사진 크기 조절)</span>
@@ -315,7 +313,7 @@
                 </div>
                 <div class="flex-row">
                     <button class="action-btn primary-btn" onclick="applyTestResult()">CREATE_ID</button>
-                    <button class="action-btn" onclick="downloadHighRes('capture-test', 'ARCH_APTITUDE')">SAVE_REPORT</button>
+                    <button class="action-btn" onclick="downloadTestResult()">SAVE_REPORT</button>
                 </div>
                 <button class="action-btn" onclick="resetTest()" style="margin-top:10px; border-color:transparent;">[ RETEST ]</button>
             </div>
@@ -657,57 +655,62 @@
         }
     }
 
-    // --- ⭐ 궁극의 고화질 우회 캡처 로직 (3D 플립 버그 완벽 해결) ⭐ ---
+    // --- ⭐ 3D 및 스케일 버그를 원천 차단하는 초고화질 무결점 캡처 로직 ⭐ ---
     window.downloadHighRes = async function(id, filename) {
         showNotif("PROCESSING HIGH-RES IMAGE...");
-        await document.fonts.ready;
-        const target = document.getElementById(id);
-        const parent = target.parentElement;
-
-        const isCard = id.includes('capture-target');
-        const flipper = document.getElementById('card-flipper');
-        const cardBack = document.querySelector('.card-back');
         
-        let origFlipper = { transition: '', transform: '', transformStyle: '' };
-        let origCardBack = { transform: '' };
+        // 폰트 안정화 대기
+        await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 300));
 
-        // 3D 속성이 적용된 카드일 경우, 캡처 순간에만 3D를 완전히 파괴하여 평면으로 만듭니다.
-        if (isCard) {
-            origFlipper = { 
-                transition: flipper.style.transition, 
-                transform: flipper.style.transform, 
-                transformStyle: flipper.style.transformStyle 
-            };
-            origCardBack = { transform: cardBack.style.transform };
-            
-            flipper.style.transition = 'none';
-            flipper.style.transform = 'none';
-            flipper.style.transformStyle = 'flat';
-            cardBack.style.transform = 'none';
+        const originalTarget = document.getElementById(id);
+        const isCard = id.includes('capture-target');
+
+        // 캡처 전용 독립 컨테이너 생성 (보이지 않는 곳에 고정)
+        const exportCard = document.createElement('div');
+        exportCard.style.position = 'fixed';
+        exportCard.style.left = '-99999px';
+        exportCard.style.top = '0';
+        
+        // 원본 크기를 그대로 유지해야 내부 CSS 비율이 깨지지 않음
+        exportCard.style.width = originalTarget.offsetWidth + 'px';
+        exportCard.style.height = originalTarget.offsetHeight + 'px';
+
+        // 내용물 복제
+        exportCard.innerHTML = originalTarget.outerHTML;
+        document.body.appendChild(exportCard);
+
+        const clone = exportCard.firstElementChild;
+        
+        // 화질 저하 및 쪼개짐의 주범인 3D/필터 속성 강제 제거
+        clone.style.transform = 'none';
+        clone.style.filter = 'none';
+        clone.style.willChange = 'auto';
+        clone.style.boxShadow = 'none';
+        clone.style.margin = '0';
+
+        // 사진 파일 배경(background-image)은 outerHTML로 안 넘어올 수 있으므로 수동 복사
+        if (isCard && id.includes('front')) {
+            const origPhoto = originalTarget.querySelector('.card-photo-area');
+            const clonePhoto = clone.querySelector('.card-photo-area');
+            if(origPhoto && clonePhoto) {
+                clonePhoto.style.backgroundImage = origPhoto.style.backgroundImage;
+                clonePhoto.style.backgroundPosition = origPhoto.style.backgroundPosition;
+                clonePhoto.style.backgroundSize = origPhoto.style.backgroundSize;
+            }
         }
 
-        // 제공해주신 캡처 기법: 화면 좌표 고정
-        const prev = { transform: target.style.transform, position: target.style.position, left: target.style.left, top: target.style.top, zIndex: target.style.zIndex };
-        const parentTransform = parent ? parent.style.transform : '';
-
-        target.style.transform = 'none';
-        target.style.position = 'fixed';
-        target.style.left = '0'; 
-        target.style.top = '0'; 
-        target.style.zIndex = '9999';
-        if(parent) parent.style.transform = 'none';
-
-        // 렌더링 대기
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
         try {
-            const canvas = await html2canvas(target, {
-                scale: 4, // 300DPI급 초고해상도 (인쇄용)
+            // 레티나 디스플레이 대응 및 최소 4배율 확대 (인쇄용 300DPI급 화질)
+            const canvas = await html2canvas(clone, {
+                scale: Math.max(window.devicePixelRatio * 2, 4),
                 useCORS: true,
                 backgroundColor: isCard ? '#ffffff' : '#0a0a0a',
+                imageTimeout: 0,
                 logging: false
             });
 
+            // 무손실 PNG 저장
             const link = document.createElement('a');
             link.download = `${filename}_${Date.now()}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
@@ -716,17 +719,9 @@
 
         } catch (e) {
             showNotif("CAPTURE FAILED");
+            console.error(e);
         } finally {
-            // 원상 복구
-            Object.assign(target.style, prev);
-            if(parent) parent.style.transform = parentTransform;
-
-            if (isCard) {
-                flipper.style.transition = origFlipper.transition;
-                flipper.style.transform = origFlipper.transform;
-                flipper.style.transformStyle = origFlipper.transformStyle;
-                cardBack.style.transform = origCardBack.transform;
-            }
+            document.body.removeChild(exportCard); // 가상 엘리먼트 제거
         }
     };
 
@@ -795,7 +790,7 @@
         btnContainer.innerHTML = '';
         qObj.a.forEach(ans => {
             const btn = document.createElement('button');
-            btn.className = 'a-btn'; btn.innerText = ans.t;
+            btn.className = 'action-btn sub-btn'; btn.style.textAlign = 'left'; btn.innerText = ans.t;
             btn.onclick = () => { answerQuestion(ans.s); };
             btnContainer.appendChild(btn);
         });
@@ -840,6 +835,11 @@
 
     function applyTestResult() { switchTab('tab-id', document.querySelector('.tab-btn:nth-child(1)')); finalizeID('UNKNOWN', window.testFinalRole, 'RANDOM', window.testFinalAttr); }
     
+    // 적성 검사 결과도 공통 High-Res 캡처 로직 사용
+    function downloadTestResult() {
+        downloadHighRes('capture-test', 'ARCH_APTITUDE');
+    }
+
     function resetTest() { document.getElementById('test-result').style.display = 'none'; document.getElementById('test-intro').style.display = 'block'; }
 
     // --- 공명 시각화 스크립트 ---
@@ -923,12 +923,11 @@
 
     function applyPreset(c1, c2, amp, freq, part) { elCol1.value = c1; elCol2.value = c2; elAmp.value = amp; elFreq.value = freq; elPart.value = part; }
     
-    // --- ⭐ 공명 파형 가로(Landscape) 초고화질 캡처 ---
     function downloadResonanceHQ() {
         showNotif("GENERATING HIGH-RES WAVEFORM...");
         
         const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = 1920;  // 고정 해상도 가로형 1080p
+        exportCanvas.width = 1920;  
         exportCanvas.height = 1080;
         const exportCtx = exportCanvas.getContext('2d');
 
@@ -971,7 +970,6 @@
             exportCtx.stroke();
         });
 
-        // 텍스트 오버레이
         exportCtx.globalAlpha = 1.0;
         exportCtx.shadowBlur = 0;
         exportCtx.fillStyle = '#ffffff';
