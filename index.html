@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@100;300;500;700&display=swap');
-
         :root {
             --bg: #030303; 
             --accent: #ffffff;
@@ -15,7 +14,7 @@
             --dimmer: rgba(255, 255, 255, 0.15);
             --sys-main: #ffffff; 
             --font: 'Orbitron', 'Noto Sans KR', sans-serif;
-            --card-color: #555555; 
+            --card-color: #555555;
         }
 
         * { box-sizing: border-box; outline: none; margin: 0; padding: 0; cursor: none; -webkit-tap-highlight-color: transparent;}
@@ -178,7 +177,7 @@
 
 <header>
     <div class="header-title-wrapper" style="display:flex; align-items:center; gap:15px;">
-        <img src="「ARCH」 Symbol Logo White Ver.png" alt="" onerror="this.style.display='none';" style="height: 25px; width: 25px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));">
+        <img src="「ARCH」 Symbol Logo White Ver.png" crossorigin="anonymous" alt="" onerror="this.style.display='none';" style="height: 25px; width: 25px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));">
         <span style="font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 3px;">ARCH</span>
         <span style="font-weight:500; letter-spacing:3px; font-size:9px; color:var(--dim);">| COMMAND_CENTER</span>
     </div>
@@ -345,10 +344,8 @@
     </div>
 
     <div id="right-id-view" class="panel">
-        
         <div class="card-scene" id="card-scroll-target">
             <div class="card-flipper" id="card-flipper">
-                
                 <div class="card-face card-front">
                     <div class="id-card-wrapper">
                         <div class="id-card-inner" id="capture-target-front">
@@ -358,7 +355,7 @@
                                     <div class="card-subtitle">STRATEGIC COMMAND</div>
                                 </div>
                                 <div class="card-logo">
-                                    <img src="「ARCH」 Symbol Logo Black Ver.png" alt="AEGIS" onerror="this.style.display='none'; this.parentNode.innerText='A.E.G.I.S'; this.parentNode.style.fontSize='9px';">
+                                    <img src="「ARCH」 Symbol Logo Black Ver.png" crossorigin="anonymous" alt="AEGIS" onerror="this.style.display='none'; this.parentNode.innerText='A.E.G.I.S'; this.parentNode.style.fontSize='9px';">
                                 </div>
                             </div>
                             
@@ -421,7 +418,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -463,14 +459,13 @@
             showNotif("SYSTEM_INITIALIZED"); 
         }, 1600);
     });
-
     document.getElementById('boot-screen').addEventListener('click', function() {
         this.style.display = 'none'; showNotif("SYSTEM_FORCED_START");
     });
-
     function showNotif(msg) {
         const notif = document.getElementById('system-notif');
-        notif.innerText = `>> ${msg}`; notif.style.display = 'block'; notif.style.animation = 'none';
+        notif.innerText = `>> ${msg}`;
+        notif.style.display = 'block'; notif.style.animation = 'none';
         void notif.offsetWidth; notif.style.animation = 'slideIn 0.3s forwards';
         setTimeout(() => { notif.style.display = 'none'; }, 3000);
     }
@@ -482,7 +477,7 @@
         document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
 
         if(window.innerWidth <= 850) {
-            document.body.scrollTop = 0; 
+            document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0; 
         }
 
@@ -525,7 +520,6 @@
             photoDisplay.style.backgroundSize = `${bgSize}%`;
         }
     });
-
     photoDisplay.addEventListener('mousedown', (e) => {
         if(photoDisplay.style.backgroundImage) { isDraggingPhoto = true; startX = e.clientX; startY = e.clientY; }
     });
@@ -544,7 +538,6 @@
             startX = e.touches[0].clientX; startY = e.touches[0].clientY;
         }
     }, {passive: true});
-
     document.addEventListener('touchmove', (e) => {
         if (!isDraggingPhoto) return;
         const dx = e.touches[0].clientX - startX; const dy = e.touches[0].clientY - startY;
@@ -599,7 +592,6 @@
 
         term.innerHTML += `<br>>> PROCESSING [${nameInput.toUpperCase()}]...<br>`;
         term.scrollTop = term.scrollHeight;
-
         let count = 0;
         let interval = setInterval(() => {
             if (count < 2) { term.innerHTML += `>> ENCODING_DATA...<br>`; term.scrollTop = term.scrollHeight; count++; } 
@@ -613,13 +605,12 @@
 
         let attrKey = (reqAttr !== 'RANDOM') ? reqAttr : attrKeys[Math.floor(Math.random() * attrKeys.length)];
         let assignedAttr = attributes[attrKey];
-
         let assignedRank = "";
         if (reqRank !== 'RANDOM') {
             assignedRank = reqRank;
         } else {
             if (role === 'GUIDE') {
-                if (attrKey !== '무속성') assignedRank = 'S-CLASS (PRIME)'; 
+                if (attrKey !== '무속성') assignedRank = 'S-CLASS (PRIME)';
                 else assignedRank = ['A-CLASS', 'B-CLASS', 'C-CLASS'][Math.floor(Math.random() * 3)];
             } else {
                 const rVal = Math.random();
@@ -655,73 +646,99 @@
         }
     }
 
-    // --- ⭐ 3D 및 스케일 버그를 원천 차단하는 초고화질 무결점 캡처 로직 ⭐ ---
+    // --- ⭐ 개선된 3D 및 스케일 버그 원천 차단 초고화질 캡처 로직 ⭐ ---
     window.downloadHighRes = async function(id, filename) {
         showNotif("PROCESSING HIGH-RES IMAGE...");
-        
-        // 폰트 안정화 대기
-        await document.fonts.ready;
-        await new Promise(r => setTimeout(r, 300));
-
-        const originalTarget = document.getElementById(id);
-        const isCard = id.includes('capture-target');
-
-        // 캡처 전용 독립 컨테이너 생성 (보이지 않는 곳에 고정)
-        const exportCard = document.createElement('div');
-        exportCard.style.position = 'fixed';
-        exportCard.style.left = '-99999px';
-        exportCard.style.top = '0';
-        
-        // 원본 크기를 그대로 유지해야 내부 CSS 비율이 깨지지 않음
-        exportCard.style.width = originalTarget.offsetWidth + 'px';
-        exportCard.style.height = originalTarget.offsetHeight + 'px';
-
-        // 내용물 복제
-        exportCard.innerHTML = originalTarget.outerHTML;
-        document.body.appendChild(exportCard);
-
-        const clone = exportCard.firstElementChild;
-        
-        // 화질 저하 및 쪼개짐의 주범인 3D/필터 속성 강제 제거
-        clone.style.transform = 'none';
-        clone.style.filter = 'none';
-        clone.style.willChange = 'auto';
-        clone.style.boxShadow = 'none';
-        clone.style.margin = '0';
-
-        // 사진 파일 배경(background-image)은 outerHTML로 안 넘어올 수 있으므로 수동 복사
-        if (isCard && id.includes('front')) {
-            const origPhoto = originalTarget.querySelector('.card-photo-area');
-            const clonePhoto = clone.querySelector('.card-photo-area');
-            if(origPhoto && clonePhoto) {
-                clonePhoto.style.backgroundImage = origPhoto.style.backgroundImage;
-                clonePhoto.style.backgroundPosition = origPhoto.style.backgroundPosition;
-                clonePhoto.style.backgroundSize = origPhoto.style.backgroundSize;
-            }
-        }
 
         try {
-            // 레티나 디스플레이 대응 및 최소 4배율 확대 (인쇄용 300DPI급 화질)
-            const canvas = await html2canvas(clone, {
-                scale: Math.max(window.devicePixelRatio * 2, 4),
+            // 폰트 안정화 대기
+            await document.fonts.ready;
+
+            const original = document.getElementById(id);
+            const rect = original.getBoundingClientRect();
+
+            // 실제 노드 복제 (outerHTML 대신 cloneNode)
+            const clone = original.cloneNode(true);
+
+            // 캡처 전용 래퍼
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '-99999px';
+            wrapper.style.top = '0';
+            wrapper.style.width = rect.width + 'px';
+            wrapper.style.height = rect.height + 'px';
+            wrapper.style.background = '#fff';
+            wrapper.style.padding = '0';
+            wrapper.style.margin = '0';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.zIndex = '-1';
+
+            clone.style.width = rect.width + 'px';
+            clone.style.height = rect.height + 'px';
+            clone.style.transform = 'none';
+            clone.style.filter = 'none';
+            clone.style.animation = 'none';
+            clone.style.transition = 'none';
+            clone.style.boxShadow = 'none';
+
+            wrapper.appendChild(clone);
+            document.body.appendChild(wrapper);
+
+            // 사진 background 강제 복사
+            const origPhoto = original.querySelector('.card-photo-area');
+            const clonePhoto = clone.querySelector('.card-photo-area');
+
+            if (origPhoto && clonePhoto) {
+                const style = getComputedStyle(origPhoto);
+                clonePhoto.style.backgroundImage = style.backgroundImage;
+                clonePhoto.style.backgroundPosition = style.backgroundPosition;
+                clonePhoto.style.backgroundSize = style.backgroundSize;
+                clonePhoto.style.backgroundRepeat = 'no-repeat';
+            }
+
+            // 내부 이미지(로고) 로드 대기
+            const images = [...clone.querySelectorAll('img')];
+            await Promise.all(images.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(res => {
+                    img.onload = res;
+                    img.onerror = res;
+                });
+            }));
+
+            await new Promise(r => setTimeout(r, 300));
+
+            // 모바일 타일링 아티팩트 방지를 위해 스케일 제한
+            const scale = Math.min(Math.max(window.devicePixelRatio * 2, 2), 3);
+
+            const canvas = await html2canvas(wrapper, {
+                scale,
                 useCORS: true,
-                backgroundColor: isCard ? '#ffffff' : '#0a0a0a',
-                imageTimeout: 0,
-                logging: false
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                logging: false,
+                imageTimeout: 15000,
+                removeContainer: true,
+                foreignObjectRendering: false,
+                width: rect.width,
+                height: rect.height,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: rect.width,
+                windowHeight: rect.height
             });
 
-            // 무손실 PNG 저장
             const link = document.createElement('a');
             link.download = `${filename}_${Date.now()}.png`;
             link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
-            showNotif("IMAGE SAVED SUCCESSFULLY!");
 
-        } catch (e) {
+            showNotif("IMAGE SAVED SUCCESSFULLY!");
+            wrapper.remove();
+
+        } catch (err) {
+            console.error(err);
             showNotif("CAPTURE FAILED");
-            console.error(e);
-        } finally {
-            document.body.removeChild(exportCard); // 가상 엘리먼트 제거
         }
     };
 
@@ -736,14 +753,12 @@
     const mLoc = ['제4구역 폐허', '아이기스 외곽 방어선', '하늘정원 하층부', '특별통제 훈련장 돔', '비상 안정화실(STAB)'];
     const mTarget = ['S급 괴수 군락 진압', '미확인 파장 발생원 추적', '폭주 임박 개체 구속', '파트너 간 공명률 테스트', '거점 침투 세력 섬멸'];
     const mGuide = ["오염도 급증 주의. 밀착 가이딩 요함.", "적대 세력 조우 시 생포를 우선.", "감각 과부하 예상. 가이딩 농도 80% 유지.", "돌발 상황 발생 시 현장 요원 재량 진압.", "과도한 속성 버프 자제 요망."];
-
     function generateMission() {
         let name = document.getElementById('m-agent-name').value.trim() || "미상_요원";
         let partner = document.getElementById('m-partner-name').value.trim();
         let role = document.getElementById('m-agent-role').value;
         let attr = document.getElementById('m-agent-attr').value;
         if(attr === 'RANDOM') attr = attrKeys[Math.floor(Math.random() * attrKeys.length)];
-
         const t = mType[Math.floor(Math.random() * mType.length)];
         const l = mLoc[Math.floor(Math.random() * mLoc.length)];
         const tg = mTarget[Math.floor(Math.random() * mTarget.length)];
@@ -772,7 +787,6 @@
         { q: "당신에게 '능력'이란?", a: [ { t: "혼돈을 잠재우는 무기", s: {sentinel:2, 번개:2} }, { t: "상처받은 자들을 지키는 방패", s: {guide:1, 물:1, 얼음:1} }, { t: "가치를 증명하는 수단", s: {sentinel:1, guide:1, 무속성:1} } ] }
     ];
     let currentQ = 0; let scores = { sentinel:0, guide:0, 불:0, 물:0, 풀:0, 번개:0, 바람:0, 얼음:0, 무속성:0 };
-
     function startTest() {
         scores = { sentinel:0, guide:0, 불:0, 물:0, 풀:0, 번개:0, 바람:0, 얼음:0, 무속성:0 };
         currentQ = 0;
@@ -805,13 +819,11 @@
     function showResult() {
         document.getElementById('test-qna').style.display = 'none';
         document.getElementById('test-result').style.display = 'block';
-
         let finalRole = scores.guide > scores.sentinel ? 'GUIDE' : 'SENTINEL';
         let finalAttr = '무속성'; let maxScore = -1;
         ['불', '물', '풀', '번개', '바람', '얼음', '무속성'].forEach(a => {
             if(scores[a] > maxScore) { maxScore = scores[a]; finalAttr = a; }
         });
-
         let dept = "";
         if (finalRole === 'GUIDE') dept = finalAttr === '무속성' ? "하모니 일반 지원반" : "하모니 특수케어반";
         else {
@@ -848,27 +860,44 @@
     const elAmp = document.getElementById('param-amp'), elFreq = document.getElementById('param-freq'), elPart = document.getElementById('param-part');
     const elCol1 = document.getElementById('color1'), elCol2 = document.getElementById('color2');
     const valAmp = document.getElementById('val-amp'), valFreq = document.getElementById('val-freq'), valPart = document.getElementById('val-part'), displaySync = document.getElementById('display-sync');
+    
+    // ⭐ 캔버스 고화질 스케일링 대응 변수
+    let logicalWidth = 0;
+    let logicalHeight = 0;
 
     function resizeCanvas() {
-        const wrapper = document.querySelector('.resonance-canvas-wrapper');
+        const wrapper = document.getElementById('right-resonance-view');
         if(wrapper && wrapper.offsetWidth > 0) {
-            canvas.width = wrapper.offsetWidth;
-            canvas.height = wrapper.offsetHeight;
+            logicalWidth = wrapper.offsetWidth;
+            logicalHeight = wrapper.offsetHeight;
+            
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = logicalWidth * dpr;
+            canvas.height = logicalHeight * dpr;
+            canvas.style.width = logicalWidth + 'px';
+            canvas.style.height = logicalHeight + 'px';
+            
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // 기존 스케일 초기화
+            ctx.scale(dpr, dpr); // 고화질 렌더링을 위한 픽셀 증폭
         }
     }
     window.addEventListener('resize', resizeCanvas);
 
-    let time = 0; let particles = [];
+    let time = 0;
+    let particles = [];
     class Particle {
         constructor(x, y, color1, color2) {
-            this.x = x; this.y = y; this.size = Math.random() * 2 + 1;
-            this.speedX = (Math.random() - 0.5) * 2; this.speedY = (Math.random() - 1) * 3 - 1;
+            this.x = x;
+            this.y = y; this.size = Math.random() * 2 + 1;
+            this.speedX = (Math.random() - 0.5) * 2;
+            this.speedY = (Math.random() - 1) * 3 - 1;
             this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
             this.color = Math.random() > 0.5 ? color1 : color2;
         }
         update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; }
         draw(ctx) {
-            ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.color;
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.fillStyle = this.color;
             ctx.shadowBlur = 8; ctx.shadowColor = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
@@ -879,31 +908,34 @@
         requestAnimationFrame(animateCanvas);
         if(document.getElementById('tab-resonance').style.display === 'none' && !document.getElementById('tab-resonance').classList.contains('active')) return;
 
+        // logicalWidth, logicalHeight를 기준으로 연산
         ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const amp = parseFloat(elAmp.value) * (canvas.height/400); 
+        ctx.fillRect(0, 0, logicalWidth, logicalHeight);
+        
+        const amp = parseFloat(elAmp.value) * (logicalHeight/400); 
         const freq = parseFloat(elFreq.value) * 0.001; 
         const pLimit = parseInt(elPart.value);
         const c1 = elCol1.value, c2 = elCol2.value;
-        const centerY = canvas.height / 2;
+        const centerY = logicalHeight / 2;
 
-        valAmp.innerText = `${elAmp.value}%`; valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
+        valAmp.innerText = `${elAmp.value}%`;
+        valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
         
         let syncRate = 100 - (elAmp.value/4) - (parseFloat(elFreq.value)/5) + (Math.random()*2);
         if(syncRate > 99) syncRate = 99.9; if(syncRate < 0) syncRate = 0.0;
-        displaySync.innerText = `${syncRate.toFixed(1)}%`; displaySync.style.color = syncRate < 40 ? '#ff4444' : '#fff';
+        displaySync.innerText = `${syncRate.toFixed(1)}%`;
+        displaySync.style.color = syncRate < 40 ? '#ff4444' : '#fff';
 
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        const gradient = ctx.createLinearGradient(0, 0, logicalWidth, 0);
         gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
-
+        
         const waves = [ { a: 1.0, f: 1.0, s: 0.02, w: 3, al: 1.0 }, { a: 0.6, f: 1.5, s: 0.03, w: 1.5, al: 0.6 }, { a: 1.2, f: 0.8, s: 0.015, w: 1, al: 0.4 } ];
-
+        
         waves.forEach(w => {
             ctx.beginPath(); ctx.lineWidth = w.w; ctx.strokeStyle = gradient; ctx.globalAlpha = w.al;
             ctx.shadowBlur = 10 * w.al; ctx.shadowColor = c1;
-            for (let x = 0; x < canvas.width; x += 5) {
-                let envelope = Math.sin((x / canvas.width) * Math.PI); 
+            for (let x = 0; x < logicalWidth; x += 5) {
+                let envelope = Math.sin((x / logicalWidth) * Math.PI); 
                 let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
                 if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 if (Math.random() < (pLimit / 10000) && w.a === 1.0) particles.push(new Particle(x, y, c1, c2));
@@ -913,7 +945,8 @@
 
         ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
         for (let i = particles.length - 1; i >= 0; i--) {
-            particles[i].update(); particles[i].draw(ctx);
+            particles[i].update();
+            particles[i].draw(ctx);
             if (particles[i].life <= 0) particles.splice(i, 1);
         }
         if (particles.length > pLimit) particles.splice(0, particles.length - pLimit);
@@ -925,7 +958,6 @@
     
     function downloadResonanceHQ() {
         showNotif("GENERATING HIGH-RES WAVEFORM...");
-        
         const exportCanvas = document.createElement('canvas');
         exportCanvas.width = 1920;  
         exportCanvas.height = 1080;
@@ -936,7 +968,7 @@
 
         exportCtx.fillStyle = 'rgba(255,255,255,0.03)';
         for(let i=0; i<exportCanvas.height; i+=8) exportCtx.fillRect(0, i, exportCanvas.width, 2);
-
+        
         const amp = parseFloat(elAmp.value) * (exportCanvas.height/400); 
         const freq = parseFloat(elFreq.value) * 0.001; 
         const pLimit = parseInt(elPart.value);
@@ -952,7 +984,6 @@
             { a: 0.6, f: 1.5, s: 0.03, w: 4, al: 0.6 }, 
             { a: 1.2, f: 0.8, s: 0.015, w: 2, al: 0.4 } 
         ];
-
         waves.forEach(w => {
             exportCtx.beginPath(); 
             exportCtx.lineWidth = w.w; 
@@ -960,7 +991,7 @@
             exportCtx.globalAlpha = w.al;
             exportCtx.shadowBlur = 30 * w.al; 
             exportCtx.shadowColor = c1;
-            
+          
             for (let x = 0; x <= exportCanvas.width; x += 5) {
                 let envelope = Math.sin((x / exportCanvas.width) * Math.PI); 
                 let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
@@ -969,7 +1000,6 @@
             }
             exportCtx.stroke();
         });
-
         exportCtx.globalAlpha = 1.0;
         exportCtx.shadowBlur = 0;
         exportCtx.fillStyle = '#ffffff';
@@ -990,7 +1020,7 @@
         exportCtx.font = 'bold 80px "Orbitron", sans-serif';
         exportCtx.fillText('A.E.G.I.S', exportCanvas.width - 60, exportCanvas.height - 60);
 
-        const link = document.createElement('a'); 
+        const link = document.createElement('a');
         link.download = 'ARCH_CORE_RESONANCE_HQ.png';
         link.href = exportCanvas.toDataURL("image/png"); 
         link.click(); 
