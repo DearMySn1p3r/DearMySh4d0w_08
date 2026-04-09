@@ -2,404 +2,713 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>ARCH_CORE_RESONANCE_VISUALIZER</title>
+    <title>ARCH_SYSTEM_V5_INTEGRATED</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@100;300;500;700&display=swap');
 
         :root {
-            --bg: #050505;
-            --panel-bg: #0d0d0d;
-            --border: rgba(255, 255, 255, 0.15);
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --font-sys: 'Orbitron', 'Noto Sans KR', sans-serif;
+            --bg: #000000; --accent: #ffffff;
+            --dim: rgba(255, 255, 255, 0.4); --dimmer: rgba(255, 255, 255, 0.1);
+            --sys-main: #ffffff; --font: 'Orbitron', 'Noto Sans KR', sans-serif;
+            --card-color: #ffffff; 
         }
 
-        * { box-sizing: border-box; outline: none; margin: 0; padding: 0; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #555; }
+        * { box-sizing: border-box; outline: none; cursor: none !important; margin: 0; padding: 0; }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--sys-main); }
 
         body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font-sys);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: var(--bg); color: var(--accent);
+            font-family: var(--font); height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column; user-select: none;
         }
 
-        /* --- 배경 효과 --- */
-        .scanline {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.02) 50%);
-            background-size: 100% 4px; pointer-events: none; z-index: 9000;
+        /* --- 커서 및 배경 --- */
+        #cursor {
+            position: fixed; width: 40px; height: 40px; border: 1px solid var(--sys-main);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 10000;
+            transition: width 0.1s, height 0.1s, background-color 0.1s; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
         }
+        #cursor::before, #cursor::after { content: ''; position: absolute; background: var(--sys-main); }
+        #cursor::before { top: 50%; left: -5px; right: -5px; height: 1px; }
+        #cursor::after { left: 50%; top: -5px; bottom: -5px; width: 1px; }
+        .click-anim { width: 20px !important; height: 20px !important; background-color: rgba(255,255,255,0.3); box-shadow: 0 0 25px var(--accent) !important; }
 
-        /* --- 헤더 --- */
-        header {
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10;
-        }
-        .header-title { font-size: 20px; font-weight: 900; letter-spacing: 4px; }
-        .header-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+        .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.03) 50%); background-size: 100% 4px; pointer-events: none; z-index: 9000; }
+        .noise-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"); z-index: -1; pointer-events: none; }
 
-        /* --- 메인 레이아웃 --- */
-        #main-container {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 70px);
-        }
+        /* --- 레이아웃 --- */
+        header { height: 70px; border-bottom: 2px solid var(--sys-main); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; background: rgba(10, 10, 10, 0.9); z-index: 500; }
+        #main-wrapper { display: grid; grid-template-columns: 500px 1fr; flex: 1; overflow: hidden; gap: 2px; background: rgba(255, 255, 255, 0.1); }
+        .panel { background: rgba(5, 5, 5, 0.95); padding: 30px; position: relative; display: flex; flex-direction: column; overflow-y: auto; }
 
-        /* --- 캔버스 디스플레이 영역 --- */
-        #display-area {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+        /* --- 탭 UI --- */
+        .tab-container { display: flex; gap: 5px; margin-bottom: 25px; border-bottom: 1px solid var(--dimmer); padding-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 10px 5px; background: transparent; color: var(--dim); border: 1px solid transparent; font-family: var(--font); font-weight: 900; letter-spacing: 1px; font-size: 10px; transition: 0.3s; text-align: center; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid var(--sys-main); text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .tab-btn:hover { color: #fff; }
+        .tab-content { display: none; flex-direction: column; flex: 1; }
+        .tab-content.active { display: flex; }
 
-        /* UI 오버레이 정보 */
-        .overlay-info {
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            pointer-events: none;
-        }
-        .info-label { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 5px; }
-        .info-value { font-size: 24px; font-weight: 900; font-family: monospace; letter-spacing: 2px; }
+        /* --- 공통 폼 UI --- */
+        .input-group { margin-bottom: 15px; }
+        .input-label { font-size: 10px; color: var(--dim); letter-spacing: 2px; margin-bottom: 6px; display: block; }
+        input, select { width: 100%; background: rgba(0,0,0,0.8); border: 1px solid var(--dimmer); color: #fff; padding: 12px; font-family: inherit; font-size: 12px; transition: 0.3s; text-transform: uppercase; }
+        input:focus, select:focus { border-color: var(--sys-main); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        button.action-btn { width: 100%; padding: 15px; background: transparent; color: var(--sys-main); border: 1px solid var(--sys-main); font-weight: 900; letter-spacing: 3px; transition: 0.3s; margin-top: 10px; position: relative; overflow: hidden; font-size: 11px; }
+        button.action-btn:hover { background: var(--sys-main); color: #000; box-shadow: 0 0 25px var(--sys-main); }
 
-        /* --- 제어 패널 --- */
-        #control-panel {
-            width: 350px;
-            background: var(--panel-bg);
-            border-left: 1px solid var(--border);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            z-index: 10;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-            overflow-y: auto;
-        }
+        #terminal, #ooc-output { background: rgba(10, 10, 10, 0.8); border: 1px solid var(--dimmer); color: #aaa; padding: 15px; font-size: 11px; line-height: 1.6; margin-top: 15px; overflow-y: auto; flex-shrink: 0; box-shadow: inset 0 0 30px rgba(0,0,0,1); }
+        #terminal { height: 160px; font-family: monospace; }
+        .terminal-highlight { color: #fff; font-weight: bold; text-shadow: 0 0 5px #fff; }
+        #ooc-output { font-family: 'Noto Sans KR', monospace; font-size: 12px; line-height: 1.8; min-height: 250px; white-space: pre-wrap; word-break: keep-all; user-select: text; border-left: 3px solid var(--sys-main); color: #fff;}
 
-        .panel-title {
-            font-size: 14px;
-            font-weight: 900;
-            color: var(--text-main);
-            letter-spacing: 2px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
+        /* --- 적성 검사 UI --- */
+        .q-text { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 20px; line-height: 1.5; word-break: keep-all; }
+        .a-btn { width: 100%; text-align: left; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--dimmer); color: #ddd; margin-bottom: 10px; font-family: var(--font); font-size: 12px; transition: 0.2s; line-height: 1.4; word-break: keep-all;}
+        .a-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--sys-main); color: #fff; padding-left: 20px; }
+        .test-progress { font-size: 10px; color: var(--sys-main); letter-spacing: 2px; margin-bottom: 10px; }
+        #capture-test { background: #0a0a0a; border: 1px solid var(--sys-main); padding: 30px; margin-bottom: 15px; position: relative; }
+        .result-box { text-align: center; }
 
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        .control-header { display: flex; justify-content: space-between; align-items: flex-end; }
-        .control-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
-        .control-val-display { font-size: 12px; font-family: monospace; color: #fff; }
-
-        /* 슬라이더 스타일 */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 8px;
-            border-radius: 2px;
-            background: #fff;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.8);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #333;
-            border-radius: 2px;
-        }
-        input[type=range]:focus { outline: none; }
-
-        /* 색상 선택기 스타일 */
-        .color-picker-wrapper { display: flex; gap: 15px; }
-        .color-box {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: none;
-            width: 100%;
-            height: 40px;
-            border-radius: 4px;
-            cursor: pointer;
-            background: transparent;
-        }
+        /* --- 공명 시각화 컨트롤 UI --- */
+        .res-control-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .res-header { display: flex; justify-content: space-between; align-items: flex-end; }
+        .res-label { font-size: 10px; color: var(--dim); letter-spacing: 1px; }
+        .res-val { font-size: 11px; font-family: monospace; color: #fff; }
+        
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; padding: 0; border: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 8px; background: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.8); margin-top: -6px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #333; border-radius: 2px; }
+        
+        .color-picker-wrapper { display: flex; gap: 10px; margin-bottom: 15px; }
+        input[type="color"] { -webkit-appearance: none; border: none; width: 100%; height: 35px; border-radius: 4px; background: transparent; padding: 0; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: 1px solid #555; border-radius: 4px; }
+        
+        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+        .preset-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--dimmer); color: #ccc; padding: 8px; font-size: 10px; transition: 0.2s; text-align: center; font-family: var(--font); }
+        .preset-btn:hover { background: #fff; color: #000; border-color: #fff; }
 
-        .preset-btn {
-            background: transparent; border: 1px solid #555; color: #fff;
-            padding: 10px; font-family: var(--font-sys); font-size: 11px; cursor: pointer;
-            transition: 0.3s; letter-spacing: 1px; margin-top: 10px;
-        }
-        .preset-btn:hover { background: #fff; color: #000; }
+        /* --- RIGHT PANEL VIEWS --- */
+        #right-id-view { display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #151515 0%, #000 100%); position: relative; flex: 1; height: 100%; }
+        #right-resonance-view { display: none; flex: 1; position: relative; background: radial-gradient(circle at center, #111 0%, #000 100%); overflow: hidden; height: 100%; }
+        
+        canvas { display: block; width: 100%; height: 100%; }
+        .overlay-info { position: absolute; top: 30px; left: 40px; pointer-events: none; }
+        .info-value { font-size: 28px; font-weight: 900; font-family: monospace; letter-spacing: 2px; }
+
+        /* --- 요원증 (ID CARD) 디자인 --- */
+        #id-card-wrapper { width: 380px; height: 580px; padding: 2px; background: linear-gradient(135deg, var(--card-color), #222, var(--card-color)); border-radius: 10px; position: relative; opacity: 0.05; transform: scale(0.9); transition: all 1s cubic-bezier(0.2, 1, 0.3, 1); box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        #id-card-wrapper.active { opacity: 1; transform: scale(1); box-shadow: 0 0 40px var(--card-color); }
+        .id-card-inner { width: 100%; height: 100%; background: #0a0a0a; border-radius: 8px; padding: 30px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .id-card-inner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.03) 10%, transparent 10%), radial-gradient(circle, rgba(255,255,255,0.03) 10%, transparent 10%); background-size: 20px 20px; background-position: 0 0, 10px 10px; z-index: 0; pointer-events: none; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; border-bottom: 1px solid var(--dimmer); padding-bottom: 15px; margin-bottom: 20px; }
+        .card-title { font-size: 22px; font-weight: 900; letter-spacing: 5px; color: #fff; }
+        .card-subtitle { font-size: 8px; color: var(--card-color); letter-spacing: 2px; margin-top: 5px; }
+        .card-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; z-index: 2; overflow: hidden; border: 1px solid transparent; border-radius: 5px;}
+        .card-logo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px var(--card-color)); }
+
+        .card-photo-area { height: 160px; background: rgba(255,255,255,0.02); border: 1px solid var(--dimmer); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+        .photo-placeholder { font-size: 40px; color: var(--dimmer); }
+        .photo-scanline { position: absolute; top:0; left:0; width:100%; height:2px; background:var(--card-color); opacity: 0.5; animation: photoScan 3s infinite linear; }
+        @keyframes photoScan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .card-data-row { display: flex; flex-direction: column; margin-bottom: 12px; z-index: 1; }
+        .data-label { font-size: 9px; color: #888; letter-spacing: 1px; }
+        .data-value { font-size: 16px; color: #fff; font-weight: 700; letter-spacing: 2px; margin-top: 4px; }
+        .data-value.highlight { color: var(--card-color); text-shadow: 0 0 10px var(--card-color); font-size: 16px;}
+
+        .card-footer { margin-top: auto; z-index: 1; display: flex; flex-direction: column; gap: 10px;}
+        .footer-top { display: flex; justify-content: space-between; align-items: flex-end; }
+        .barcode-container { text-align: right; overflow: hidden; }
+        .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 38px; color: #fff; opacity: 0.7; letter-spacing: 2px; }
+        
+        .download-btn-float { position: absolute; bottom: 30px; right: 30px; width: auto; padding: 12px 20px; font-size: 10px; display: none; z-index: 100; background: rgba(0,0,0,0.8); border: 1px solid var(--sys-main); color: var(--sys-main); font-weight: bold; letter-spacing: 2px;}
+        .download-btn-float:hover { background: var(--sys-main); color: #000; }
+        #id-card-wrapper.active + #download-btn { display: block; }
+
+        /* --- 알림창 --- */
+        #system-notif { position: fixed; top: 30px; right: 30px; width: 350px; background: #fff; color: #000; padding: 15px 20px; font-weight: 900; display: none; z-index: 11000; letter-spacing: 1px; font-size: 11px; border-left: 5px solid var(--card-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        #boot-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .loading-text { font-size: 18px; letter-spacing: 12px; color: #fff; font-weight: 700; margin-bottom: 20px; animation: textGlitch 0.1s infinite; }
+        .loading-bar { width: 400px; height: 1px; background: rgba(255,255,255,0.2); position: relative; }
+        .loading-fill { height: 100%; background: #fff; width: 0%; box-shadow: 0 0 20px #fff; animation: fillBar 1.5s forwards ease-in-out; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="scanline"></div>
+<div id="cursor"></div>
+<div id="boot-screen">
+    <div class="loading-text">ARCH_SYSTEM_INITIALIZING</div>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+<div id="system-notif">>> SYSTEM_MESSAGE</div>
+<div class="scanline"></div><div class="noise-bg"></div>
 
 <header>
-    <div>
-        <div class="header-title">ARCH_SYSTEM</div>
-        <div class="header-sub">CORE RESONANCE WAVEFORM VISUALIZER V1.0</div>
+    <div style="display:flex; align-items:center; gap:20px;">
+        <img src="「ARCH」 Symbol Logo White Ver.png" alt="" onerror="this.style.display='none';" style="height: 35px; width: 35px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));">
+        <span style="font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 2px;">ARCH</span>
+        <span style="font-weight:500; letter-spacing:5px; font-size:12px; color:var(--dim);">| COMMAND_CENTER</span>
     </div>
-    <div style="text-align: right;">
-        <div class="header-sub">STATUS</div>
-        <div style="font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px #00ffcc;">ACTIVE</div>
+    <div style="text-align:right; font-size:10px; color:var(--dim); line-height:1.6; font-family:monospace;">
+        SYSTEM: <span style="color:#fff;">ONLINE</span><br>
+        <span id="clock" style="color:#fff;">00:00:00</span>
     </div>
 </header>
 
-<div id="main-container">
-    <div id="display-area">
-        <canvas id="coreCanvas"></canvas>
-        <div class="overlay-info">
-            <div class="info-label">CURRENT_SYNC_RATE</div>
-            <div class="info-value" id="display-sync">85.0%</div>
+<div id="main-wrapper">
+    <div class="panel">
+        
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('tab-id', this)">ID_CARD</button>
+            <button class="tab-btn" onclick="switchTab('tab-mission', this)">MISSION</button>
+            <button class="tab-btn" onclick="switchTab('tab-test', this)">APTITUDE</button>
+            <button class="tab-btn" onclick="switchTab('tab-resonance', this)">RESONANCE</button>
+        </div>
+
+        <div id="tab-id" class="tab-content active">
+            <div class="input-group">
+                <span class="input-label">CODENAME / NAME</span>
+                <input type="text" id="agent-name" placeholder="요원명을 입력하세요">
+            </div>
+            <div class="input-group">
+                <span class="input-label">PRIMARY_ROLE</span>
+                <select id="agent-role">
+                    <option value="SENTINEL">센티넬 (SENTINEL)</option>
+                    <option value="GUIDE">가이드 (GUIDE)</option>
+                </select>
+            </div>
+            <button class="action-btn" onclick="startScanning()" id="btn-generate">INITIATE_SCAN</button>
+            <div id="terminal">>> SYSTEM_READY.<br>>> AWAITING_NEW_OPERATOR_DATA...<br></div>
+        </div>
+
+        <div id="tab-mission" class="tab-content">
+            <div style="display: flex; gap:10px;">
+                <div class="input-group" style="flex:1;">
+                    <span class="input-label">TARGET OPERATOR</span>
+                    <input type="text" id="m-agent-name" placeholder="투입될 메인 요원">
+                </div>
+                <div class="input-group" style="flex:1;">
+                    <span class="input-label">PARTNER OPERATOR</span>
+                    <input type="text" id="m-partner-name" placeholder="파트너 이름 (선택)">
+                </div>
+            </div>
+            <div style="display: flex; gap:10px;">
+                <div class="input-group" style="flex:1;">
+                    <span class="input-label">ROLE (역할)</span>
+                    <select id="m-agent-role">
+                        <option value="센티넬">센티넬</option>
+                        <option value="가이드">가이드</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex:1;">
+                    <span class="input-label">ATTRIBUTE (속성)</span>
+                    <select id="m-agent-attr">
+                        <option value="RANDOM">랜덤</option>
+                        <option value="불">불</option><option value="물">물</option>
+                        <option value="풀">풀</option><option value="번개">번개</option>
+                        <option value="바람">바람</option><option value="얼음">얼음</option>
+                        <option value="무속성">무속성</option>
+                    </select>
+                </div>
+            </div>
+            <button class="action-btn" onclick="generateMission()">REQUEST_MISSION</button>
+            <button class="action-btn" onclick="copyOOC()" id="btn-copy" style="border-color: var(--dimmer); color: var(--dim);">[ COPY_OOC_TEXT ]</button>
+            <div id="ooc-output">>> 대기 중... 요원 정보를 입력하고 임무를 요청하십시오.</div>
+        </div>
+
+        <div id="tab-test" class="tab-content">
+            <div id="test-intro">
+                <div style="font-size:16px; font-weight:900; color:#fff; letter-spacing:2px; margin-bottom:15px; border-bottom:1px solid var(--sys-main); padding-bottom:10px;">APTITUDE EVALUATION</div>
+                <p style="font-size:12px; color:#ccc; line-height:1.6; word-break:keep-all;">가장 본능적으로 끌리는 선택지를 고르십시오.</p>
+                <button class="action-btn" onclick="startTest()">BEGIN_EVALUATION</button>
+            </div>
+            <div id="test-qna" style="display:none;">
+                <div class="test-progress" id="q-progress">QUESTION 1 / 5</div>
+                <div class="q-text" id="q-text">질문 텍스트</div>
+                <div id="a-buttons" style="display:flex; flex-direction:column;"></div>
+            </div>
+            <div id="test-result" style="display:none;">
+                <div id="capture-test">
+                    <div style="font-size:18px; font-weight:900; color:#fff; border-bottom:1px solid var(--dimmer); padding-bottom:10px; margin-bottom:20px; text-align:center; letter-spacing:3px;">OFFICIAL REPORT</div>
+                    <div class="result-box">
+                        <div style="font-size:10px; color:#888; margin-bottom:5px;">ANALYZED POTENTIAL</div>
+                        <div id="res-role" style="font-size:24px; font-weight:900; color:#fff; letter-spacing:3px;">SENTINEL</div>
+                        <div id="res-attr" style="font-size:16px; color:var(--sys-main); margin-top:5px; font-weight:bold;">🔥 불 (PYRE)</div>
+                        <div style="margin:20px 0; border-top:1px dashed var(--dimmer);"></div>
+                        <div style="font-size:10px; color:#888; margin-bottom:5px;">RECOMMENDED DEPT.</div>
+                        <div id="res-dept" style="font-size:14px; color:#fff; letter-spacing:1px;">최전선 타격대 뱅가드</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="action-btn" onclick="applyTestResult()" style="flex:1;">CREATE_ID</button>
+                    <button class="action-btn" onclick="downloadTestResult()" style="flex:1; border-color:var(--dimmer); color:var(--dim);">SAVE_REPORT</button>
+                </div>
+                <button class="action-btn" onclick="resetTest()" style="border-color:var(--dimmer); color:var(--dim); margin-top:10px;">RETEST</button>
+            </div>
+        </div>
+
+        <div id="tab-resonance" class="tab-content">
+            <div style="font-size:14px; font-weight:900; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">CORE PARAMETERS</div>
+            
+            <div class="res-control-group">
+                <div class="res-header">
+                    <span class="res-label">ENERGY AMPLITUDE (진폭)</span>
+                    <span class="res-val" id="val-amp">100%</span>
+                </div>
+                <input type="range" id="param-amp" min="10" max="200" value="100">
+            </div>
+
+            <div class="res-control-group">
+                <div class="res-header">
+                    <span class="res-label">RESONANCE FREQUENCY (주파수)</span>
+                    <span class="res-val" id="val-freq">5.0 Hz</span>
+                </div>
+                <input type="range" id="param-freq" min="1" max="150" value="50">
+            </div>
+
+            <div class="res-control-group">
+                <div class="res-header">
+                    <span class="res-label">PARTICLE OUTPUT (입자)</span>
+                    <span class="res-val" id="val-part">150</span>
+                </div>
+                <input type="range" id="param-part" min="0" max="300" value="150">
+            </div>
+
+            <div class="color-picker-wrapper" style="margin-top:10px;">
+                <div style="flex:1;">
+                    <span class="res-label" style="display:block; margin-bottom:5px;">WAVE_COLOR_1</span>
+                    <input type="color" id="color1" value="#00FFFF"> 
+                </div>
+                <div style="flex:1;">
+                    <span class="res-label" style="display:block; margin-bottom:5px;">WAVE_COLOR_2</span>
+                    <input type="color" id="color2" value="#3388FF">
+                </div>
+            </div>
+
+            <div class="res-label" style="text-align: center; border-top:1px dashed var(--dimmer); padding-top:15px; margin-top:5px;">--- ATTRIBUTE PRESETS ---</div>
+            <div class="preset-grid">
+                <button class="preset-btn" onclick="applyPreset('#FF3300', '#FF8800', 160, 80, 250)">🔥 불 (PYRE)</button>
+                <button class="preset-btn" onclick="applyPreset('#00A8FF', '#0000FF', 80, 30, 100)">💧 물 (AQUA)</button>
+                <button class="preset-btn" onclick="applyPreset('#33FF66', '#008822', 100, 45, 150)">🌿 풀 (VERDE)</button>
+                <button class="preset-btn" onclick="applyPreset('#FFD700', '#FFFFFF', 140, 130, 200)">⚡ 번개 (FULMEN)</button>
+                <button class="preset-btn" onclick="applyPreset('#00FFFF', '#FFFFFF', 110, 60, 180)">💨 바람 (AERO)</button>
+                <button class="preset-btn" onclick="applyPreset('#AADDFF', '#FFFFFF', 50, 15, 80)">❄️ 얼음 (GLACIES)</button>
+                <button class="preset-btn" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)" style="grid-column: span 2;">무속성 (NONE)</button>
+            </div>
+            
+            <button class="action-btn" onclick="downloadResonance()" style="margin-top:20px; background:var(--sys-main); color:#000;">[ SAVE_WAVEFORM_IMG ]</button>
         </div>
     </div>
 
-    <div id="control-panel">
-        <div class="panel-title">PARAMETER_CONTROL</div>
-
-        <div class="control-group">
-            <div class="control-header">
-                <span class="control-label">ENERGY AMPLITUDE (출력 강도)</span>
-                <span class="control-val-display" id="val-amp">100%</span>
+    <div id="right-id-view">
+        <div id="id-card-wrapper">
+            <div class="id-card-inner" id="capture-target">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">ARCH</div>
+                        <div class="card-subtitle">STRATEGIC COMMAND</div>
+                    </div>
+                    <div class="card-logo">
+                        <img src="「ARCH」 Symbol Logo White Ver.png" alt="AEGIS" onerror="this.style.display='none'; this.parentNode.style.border='1px solid var(--card-color)'; this.parentNode.style.color='var(--card-color)'; this.parentNode.innerText='A.E.G.I.S';">
+                    </div>
+                </div>
+                <div class="card-photo-area">
+                    <div class="photo-placeholder">👤</div>
+                    <div class="photo-scanline"></div>
+                </div>
+                <div class="card-data-row">
+                    <span class="data-label">OPERATOR_NAME</span>
+                    <span class="data-value" id="c-name">UNKNOWN</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="card-data-row" style="flex: 1;">
+                        <span class="data-label">CLASS / ROLE</span>
+                        <span class="data-value" id="c-role" style="font-size:14px;">UNKNOWN</span>
+                    </div>
+                    <div class="card-data-row" style="flex: 1;">
+                        <span class="data-label">RANK</span>
+                        <span class="data-value highlight" id="c-rank" style="font-size:14px;">--</span>
+                    </div>
+                </div>
+                <div class="card-data-row">
+                    <span class="data-label">CORE_ATTRIBUTE</span>
+                    <span class="data-value highlight" id="c-attr">SCANNING...</span>
+                </div>
+                <div class="card-footer">
+                    <div class="footer-top">
+                        <div>
+                            <div class="data-label">SYNC_WAVE_ID</div>
+                            <div style="font-size: 10px; color: #888; margin-top: 3px;" id="c-wave">0000-0000-0000</div>
+                        </div>
+                    </div>
+                    <div class="barcode-container">
+                        <div class="barcode" id="c-barcode">*A000*</div>
+                    </div>
+                </div>
             </div>
-            <input type="range" id="param-amp" min="10" max="200" value="100">
         </div>
+        <button id="download-btn" class="download-btn-float" onclick="downloadCard()">[ DOWNLOAD_CARD_IMG ]</button>
+    </div>
 
-        <div class="control-group">
-            <div class="control-header">
-                <span class="control-label">RESONANCE FREQUENCY (공명 주파수)</span>
-                <span class="control-val-display" id="val-freq">5.0 Hz</span>
-            </div>
-            <input type="range" id="param-freq" min="1" max="150" value="50">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header">
-                <span class="control-label">PARTICLE OUTPUT (입자 배출량)</span>
-                <span class="control-val-display" id="val-part">HIGH</span>
-            </div>
-            <input type="range" id="param-part" min="0" max="300" value="150">
-        </div>
-
-        <div class="panel-title" style="margin-top: 15px;">CORE_SIGNATURE_COLOR</div>
-        
-        <div class="color-picker-wrapper">
-            <div class="color-box">
-                <span class="control-label">WAVE_COLOR_1</span>
-                <input type="color" id="color1" value="#ff3300"> 
-            </div>
-            <div class="color-box">
-                <span class="control-label">WAVE_COLOR_2</span>
-                <input type="color" id="color2" value="#ffea00">
-            </div>
-        </div>
-
-        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
-            <div class="control-label" style="text-align: center;">--- QUICK PRESETS ---</div>
-            <button class="preset-btn" onclick="applyPreset('#3388FF', '#00FFFF', 80, 40, 200)">💧 AQUA (STABLE)</button>
-            <button class="preset-btn" onclick="applyPreset('#FFD700', '#FFFFFF', 150, 120, 250)">⚡ FULMEN (HIGH FREQ)</button>
-            <button class="preset-btn" onclick="applyPreset('#FF0000', '#550000', 180, 20, 300)">⚠️ RAMPAGE (DANGER)</button>
+    <div id="right-resonance-view">
+        <canvas id="coreCanvas"></canvas>
+        <div class="overlay-info">
+            <div class="input-label" style="font-size:12px;">CURRENT_SYNC_RATE</div>
+            <div class="info-value" id="display-sync">85.0%</div>
         </div>
     </div>
 </div>
 
 <script>
+    // 커서 및 시계
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+    document.addEventListener('mousedown', () => cursor.classList.add('click-anim'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('click-anim'));
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+    // --- 부팅 및 로딩 화면 처리 (요청하신 수정본 적용) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => { 
+            const bootScreen = document.getElementById('boot-screen');
+            if(bootScreen) {
+                bootScreen.style.opacity = '0';
+                bootScreen.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => bootScreen.style.display = 'none', 500);
+            }
+            showNotif("SYSTEM_INITIALIZED"); 
+        }, 1500);
+    });
+
+    document.getElementById('boot-screen').addEventListener('click', function() {
+        this.style.display = 'none';
+        showNotif("SYSTEM_FORCED_START");
+    });
+
+    function showNotif(msg) {
+        const notif = document.getElementById('system-notif');
+        notif.innerText = `>> ${msg}`; notif.style.display = 'block'; notif.style.animation = 'none';
+        void notif.offsetWidth; notif.style.animation = 'slideIn 0.3s forwards';
+        setTimeout(() => { notif.style.display = 'none'; }, 3500);
+    }
+
+    // --- 탭 및 뷰 전환 스크립트 ---
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
+
+        // 오른쪽 뷰 토글
+        if(tabId === 'tab-resonance') {
+            document.getElementById('right-id-view').style.display = 'none';
+            document.getElementById('right-resonance-view').style.display = 'block';
+            resizeCanvas(); // 캔버스 크기 재조정
+        } else {
+            document.getElementById('right-id-view').style.display = 'flex';
+            document.getElementById('right-resonance-view').style.display = 'none';
+        }
+    }
+
+    // --- 속성 데이터 ---
+    const attributes = {
+        '불': { name: '🔥 불 (PYRE)', color: '#FF3300', txt: '불' },
+        '물': { name: '💧 물 (AQUA)', color: '#3388FF', txt: '물' },
+        '풀': { name: '🌿 풀 (VERDE)', color: '#33FF66', txt: '풀' },
+        '번개': { name: '⚡ 번개 (FULMEN)', color: '#FFD700', txt: '번개' },
+        '바람': { name: '💨 바람 (AERO)', color: '#00FFFF', txt: '바람' },
+        '얼음': { name: '❄️ 얼음 (GLACIES)', color: '#FFFFFF', txt: '얼음' },
+        '무속성': { name: '무속성 (NONE)', color: '#AAAAAA', txt: '무속성' }
+    };
+    const attrKeys = Object.keys(attributes);
+
+    // --- 요원증 생성 (ID CARD) ---
+    let isScanning = false;
+    function startScanning(presetRole = null, presetAttr = null) {
+        if (isScanning) return;
+        const nameInput = document.getElementById('agent-name').value.trim() || 'UNKNOWN';
+        isScanning = true;
+        const btn = document.getElementById('btn-generate');
+        const term = document.getElementById('terminal');
+        const cardWrapper = document.getElementById('id-card-wrapper');
+        const role = presetRole || document.getElementById('agent-role').value;
+        
+        btn.innerText = "SCANNING..."; btn.style.pointerEvents = "none";
+        cardWrapper.classList.remove('active');
+        term.innerHTML += `<br>>> COMMENCING_SCAN FOR [${nameInput.toUpperCase()}]...<br>`;
+        term.scrollTop = term.scrollHeight;
+
+        let steps = [ ">> ANALYZING_NEURAL_PATTERN...", ">> MEASURING_CORE_RESONANCE..." ];
+        let count = 0;
+        let interval = setInterval(() => {
+            if (count < steps.length) { term.innerHTML += `${steps[count]}<br>`; term.scrollTop = term.scrollHeight; count++; } 
+            else { clearInterval(interval); finalizeID(nameInput, role, presetAttr); }
+        }, 500);
+    }
+
+    function finalizeID(name, role, presetAttr) {
+        const term = document.getElementById('terminal');
+        const cardWrapper = document.getElementById('id-card-wrapper');
+        const root = document.documentElement;
+
+        let attrKey = presetAttr || attrKeys[Math.floor(Math.random() * attrKeys.length)];
+        let assignedAttr = attributes[attrKey];
+
+        let assignedRank = "";
+        if (role === 'GUIDE') {
+            if (attrKey !== '무속성') assignedRank = 'S-CLASS (PRIME)'; 
+            else assignedRank = ['A-CLASS (AGENT)', 'B-CLASS (AGENT)', 'C-CLASS (ACOLYTE)'][Math.floor(Math.random() * 3)];
+        } else {
+            const rVal = Math.random();
+            if(rVal < 0.1) assignedRank = 'S-CLASS (VANGUARD)';
+            else if(rVal < 0.4) assignedRank = 'A-CLASS (AGENT)';
+            else if(rVal < 0.8) assignedRank = 'B-CLASS (AGENT)';
+            else assignedRank = 'C-CLASS (ACOLYTE)';
+        }
+
+        document.getElementById('m-agent-name').value = name !== 'UNKNOWN' ? name : '';
+        document.getElementById('m-agent-role').value = role === 'GUIDE' ? '가이드' : '센티넬';
+        document.getElementById('m-agent-attr').value = attrKey;
+
+        term.innerHTML += `<span class="terminal-highlight">>> MATCH_FOUND!</span><br>>> GENERATING_ID_CARD...<br>`;
+        term.scrollTop = term.scrollHeight;
+        root.style.setProperty('--card-color', assignedAttr.color);
+
+        document.getElementById('c-name').innerText = name.toUpperCase();
+        document.getElementById('c-role').innerText = role;
+        document.getElementById('c-rank').innerText = assignedRank;
+        document.getElementById('c-attr').innerText = assignedAttr.name;
+        document.getElementById('c-wave').innerText = `${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}`.toUpperCase();
+        document.getElementById('c-barcode').innerText = `*${Math.random().toString(36).substr(2, 6).toUpperCase()}*`;
+
+        setTimeout(() => {
+            cardWrapper.classList.add('active'); showNotif("ID_CARD_ISSUED");
+            const btn = document.getElementById('btn-generate');
+            btn.innerText = "RE_SCAN"; btn.style.pointerEvents = "auto";
+            isScanning = false;
+        }, 500);
+    }
+
+    function downloadCard() {
+        const target = document.getElementById('capture-target');
+        const btn = document.getElementById('download-btn'); btn.innerText = "PROCESSING...";
+        html2canvas(target, { scale: 2, backgroundColor: '#0a0a0a', logging: false }).then(canvas => {
+            const link = document.createElement('a'); link.download = `ARCH_ID.png`;
+            link.href = canvas.toDataURL("image/png"); link.click();
+            btn.innerText = "[ DOWNLOAD_CARD_IMG ]"; showNotif("IMAGE_SAVED");
+        });
+    }
+
+    // --- 미션 생성 스크립트 ---
+    const mType = ['전술 섬멸 작전', '구역 탐색 및 정찰', '거점 방어 및 구출', '비상 안정화 프로토콜', '하모니 정기 상담'];
+    const mLoc = ['제4구역 폐허', '아이기스 외곽 방어선', '하늘정원 하층부', '특별통제 훈련장 돔', '비상 안정화실(STAB)'];
+    const mTarget = ['S급 괴수 군락 진압', '미확인 파장 발생원 추적', '폭주 임박 개체 구속', '파트너 간 공명률 테스트', '거점 침투 세력 섬멸'];
+    const mGuide = ["능력 사용 시 오염도 급증 주의. 즉각적인 밀착 가이딩을 요함.", "적대 세력 조우 시 생포를 우선으로 하되, 파트너의 판단에 따를 것.", "감각 과부하가 예상됨. 작전 전 가이딩 농도 80% 이상 권장.", "돌발 상황 발생 시 현장 요원 재량으로 진압 허가.", "과도한 속성 버프 사용을 자제하고 파장 안정화에 집중할 것."];
+
+    function generateMission() {
+        let name = document.getElementById('m-agent-name').value.trim() || "미상_요원";
+        let partner = document.getElementById('m-partner-name').value.trim();
+        let role = document.getElementById('m-agent-role').value;
+        let attr = document.getElementById('m-agent-attr').value;
+        if(attr === 'RANDOM') attr = attrKeys[Math.floor(Math.random() * attrKeys.length)];
+
+        const t = mType[Math.floor(Math.random() * mType.length)];
+        const l = mLoc[Math.floor(Math.random() * mLoc.length)];
+        const tg = mTarget[Math.floor(Math.random() * mTarget.length)];
+        const g = mGuide[Math.floor(Math.random() * mGuide.length)];
+        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '.');
+        let partnerText = partner ? `\n■ 동행 파트너: ${partner}` : "";
+
+        const oocText = `[ 이전 RP 중지. 새로운 상황 전개. ]\n\n[ ARCH CENTRAL COMMAND : DAILY DISPATCH ]\n■ 발급일자: ${dateStr}\n■ 투입요원: ${name} (${role} / ${attr})${partnerText}\n■ 작전지역: ${l}\n■ 임무분류: ${t}\n■ 작전목표: ${tg}\n■ 지침사항: ${g}\n\n[ OOC : 위 임무 로그를 기반으로 역극을 시작합니다. ]`;
+
+        document.getElementById('ooc-output').innerText = oocText;
+        document.getElementById('btn-copy').style.color = 'var(--sys-main)';
+        document.getElementById('btn-copy').style.borderColor = 'var(--sys-main)';
+        showNotif("MISSION_DISPATCHED");
+    }
+
+    function copyOOC() {
+        const text = document.getElementById('ooc-output').innerText;
+        if(text.includes('대기 중...')) return showNotif("ERROR: NO_DATA");
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('btn-copy');
+            btn.innerText = "[ COPIED! ]"; btn.style.background = 'var(--sys-main)'; btn.style.color = '#000';
+            setTimeout(() => { btn.innerText = "[ COPY_OOC_TEXT ]"; btn.style.background = 'transparent'; btn.style.color = 'var(--sys-main)'; }, 2000);
+        });
+    }
+
+    // --- 적성 검사 스크립트 ---
+    const testData = [
+        { q: "훈련 중 동료가 치명상을 입었다. 당신의 행동은?", a: [ { t: "동료에게 다가가 파장을 안정화시킨다.", s: {guide:2, 물:1, 풀:1} }, { t: "적을 찾아내고 반격한다.", s: {sentinel:2, 불:1, 번개:1} }, { t: "방어막을 전개하여 피해를 차단한다.", s: {sentinel:1, guide:1, 얼음:2} } ] },
+        { q: "무의식을 가장 잘 표현하는 감정은?", a: [ { t: "분노와 파괴 충동", s: {sentinel:2, 불:2} }, { t: "모든 것을 포용하고 싶은 평온함", s: {guide:2, 물:2, 무속성:1} }, { t: "벗어나고 싶은 호기심과 자유", s: {sentinel:1, 바람:2} } ] },
+        { q: "거대한 장벽에 가로막혔을 때, 당신은?", a: [ { t: "장벽을 산산조각 낸다.", s: {sentinel:2, 번개:1, 불:1} }, { t: "바람이나 지형을 이용해 우회한다.", s: {바람:2, 풀:1} }, { t: "틈새를 찾아 구조를 해체한다.", s: {guide:1, 무속성:2} }, { t: "얼려버려 무력화한다.", s: {얼음:2} } ] },
+        { q: "고된 임무를 마친 후 당신이 머무는 곳은?", a: [ { t: "신체를 극한으로 몰아넣는 훈련장", s: {sentinel:2, 불:1} }, { t: "조용하고 따뜻한 정원", s: {guide:1, 풀:2} }, { t: "타인과 교감하는 라운지", s: {guide:2, 무속성:1} } ] },
+        { q: "당신에게 '능력'이란?", a: [ { t: "혼돈을 잠재우는 무기", s: {sentinel:2, 번개:2} }, { t: "상처받은 자들을 지키는 방패", s: {guide:1, 물:1, 얼음:1} }, { t: "나의 가치를 증명하는 수단", s: {sentinel:1, guide:1, 무속성:1} } ] }
+    ];
+
+    let currentQ = 0;
+    let scores = { sentinel:0, guide:0, 불:0, 물:0, 풀:0, 번개:0, 바람:0, 얼음:0, 무속성:0 };
+
+    function startTest() {
+        scores = { sentinel:0, guide:0, 불:0, 물:0, 풀:0, 번개:0, 바람:0, 얼음:0, 무속성:0 };
+        currentQ = 0;
+        document.getElementById('test-intro').style.display = 'none';
+        document.getElementById('test-result').style.display = 'none';
+        document.getElementById('test-qna').style.display = 'block';
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const qObj = testData[currentQ];
+        document.getElementById('q-progress').innerText = `QUESTION ${currentQ + 1} / 5`;
+        document.getElementById('q-text').innerText = qObj.q;
+        const btnContainer = document.getElementById('a-buttons');
+        btnContainer.innerHTML = '';
+        qObj.a.forEach(ans => {
+            const btn = document.createElement('button');
+            btn.className = 'a-btn'; btn.innerText = ans.t;
+            btn.onclick = () => { answerQuestion(ans.s); };
+            btnContainer.appendChild(btn);
+        });
+    }
+
+    function answerQuestion(scoreObj) {
+        for(let key in scoreObj) { if(scores[key] !== undefined) scores[key] += scoreObj[key]; }
+        currentQ++;
+        if(currentQ < testData.length) showQuestion(); else showResult();
+    }
+
+    function showResult() {
+        document.getElementById('test-qna').style.display = 'none';
+        document.getElementById('test-result').style.display = 'block';
+
+        let finalRole = scores.guide > scores.sentinel ? 'GUIDE' : 'SENTINEL';
+        let finalAttr = '무속성'; let maxScore = -1;
+        ['불', '물', '풀', '번개', '바람', '얼음', '무속성'].forEach(a => {
+            if(scores[a] > maxScore) { maxScore = scores[a]; finalAttr = a; }
+        });
+
+        let dept = "";
+        if (finalRole === 'GUIDE') dept = finalAttr === '무속성' ? "하모니 부서 일반 지원반" : "하모니 부서 속성 특수케어반";
+        else {
+            if(finalAttr === '불' || finalAttr === '번개') dept = "제1선봉대 타격 특화조";
+            else if(finalAttr === '얼음' || finalAttr === '물') dept = "아이기스 본부 특수방어팀";
+            else if(finalAttr === '바람' || finalAttr === '풀') dept = "외곽 정찰 전담반";
+            else dept = "중앙 전술 관제 센터";
+        }
+
+        window.testFinalRole = finalRole; window.testFinalAttr = finalAttr;
+        document.getElementById('res-role').innerText = finalRole;
+        document.getElementById('res-attr').innerText = attributes[finalAttr].name;
+        document.getElementById('res-attr').style.color = attributes[finalAttr].color;
+        document.getElementById('res-dept').innerText = dept;
+        showNotif("EVALUATION_COMPLETE");
+    }
+
+    function applyTestResult() { switchTab('tab-id', document.querySelector('.tab-btn:nth-child(1)')); startScanning(window.testFinalRole, window.testFinalAttr); }
+    function downloadTestResult() {
+        html2canvas(document.getElementById('capture-test'), { scale: 2, backgroundColor: '#0a0a0a', logging: false }).then(canvas => {
+            const link = document.createElement('a'); link.download = `ARCH_APTITUDE.png`;
+            link.href = canvas.toDataURL("image/png"); link.click(); showNotif("REPORT_SAVED");
+        });
+    }
+    function resetTest() { document.getElementById('test-result').style.display = 'none'; document.getElementById('test-intro').style.display = 'block'; }
+
+    // --- 공명 시각화 (Canvas) 스크립트 ---
     const canvas = document.getElementById('coreCanvas');
     const ctx = canvas.getContext('2d');
+    const elAmp = document.getElementById('param-amp'), elFreq = document.getElementById('param-freq'), elPart = document.getElementById('param-part');
+    const elCol1 = document.getElementById('color1'), elCol2 = document.getElementById('color2');
+    const valAmp = document.getElementById('val-amp'), valFreq = document.getElementById('val-freq'), valPart = document.getElementById('val-part'), displaySync = document.getElementById('display-sync');
 
-    // UI 요소
-    const elAmp = document.getElementById('param-amp');
-    const elFreq = document.getElementById('param-freq');
-    const elPart = document.getElementById('param-part');
-    const elCol1 = document.getElementById('color1');
-    const elCol2 = document.getElementById('color2');
-
-    const valAmp = document.getElementById('val-amp');
-    const valFreq = document.getElementById('val-freq');
-    const valPart = document.getElementById('val-part');
-    const displaySync = document.getElementById('display-sync');
-
-    // 캔버스 크기 맞춤
-    function resize() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
+    function resizeCanvas() {
+        if(document.getElementById('right-resonance-view').style.display !== 'none') {
+            canvas.width = document.getElementById('right-resonance-view').clientWidth;
+            canvas.height = document.getElementById('right-resonance-view').clientHeight;
+        }
     }
-    window.addEventListener('resize', resize);
-    resize();
+    window.addEventListener('resize', resizeCanvas);
 
-    // 애니메이션 변수
-    let time = 0;
-    let particles = [];
-
-    // 파티클 객체 생성 함수
+    let time = 0; let particles = [];
     class Particle {
         constructor(x, y, color1, color2) {
-            this.x = x;
-            this.y = y;
-            this.size = Math.random() * 3 + 1;
-            this.speedX = (Math.random() - 0.5) * 2;
-            this.speedY = (Math.random() - 1) * 3 - 1; // 주로 위로 퍼지게
-            this.life = 1.0;
-            this.decay = Math.random() * 0.02 + 0.01;
-            this.color = Math.random() > 0.5 ? color1 : color2; // 두 색상 중 하나 랜덤
+            this.x = x; this.y = y; this.size = Math.random() * 3 + 1;
+            this.speedX = (Math.random() - 0.5) * 2; this.speedY = (Math.random() - 1) * 3 - 1;
+            this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
+            this.color = Math.random() > 0.5 ? color1 : color2;
         }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            this.life -= this.decay;
-        }
+        update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; }
         draw(ctx) {
-            ctx.globalAlpha = Math.max(0, this.life);
-            ctx.fillStyle = this.color;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1.0;
-            ctx.shadowBlur = 0;
+            ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.color;
+            ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
         }
     }
 
-    function hexToRgb(hex) {
-        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
-    }
+    function animateCanvas() {
+        requestAnimationFrame(animateCanvas);
+        if(document.getElementById('right-resonance-view').style.display === 'none') return; // 안보일땐 그리기 생략
 
-    // 메인 드로우 루프
-    function animate() {
-        requestAnimationFrame(animate);
-
-        // 잔상 효과를 위한 반투명 배경 칠하기
         ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 값 읽어오기
-        const amplitude = parseFloat(elAmp.value);
-        const frequency = parseFloat(elFreq.value) * 0.0005; // 캔버스 너비에 맞게 스케일링
-        const particleLimit = parseInt(elPart.value);
-        const c1 = elCol1.value;
-        const c2 = elCol2.value;
-        
+        const amp = parseFloat(elAmp.value), freq = parseFloat(elFreq.value) * 0.0005, pLimit = parseInt(elPart.value);
+        const c1 = elCol1.value, c2 = elCol2.value;
         const centerY = canvas.height / 2;
 
-        // UI 텍스트 업데이트
-        valAmp.innerText = `${amplitude}%`;
-        valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`;
-        valPart.innerText = particleLimit;
+        valAmp.innerText = `${amp}%`; valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
         
-        // 동기화율 텍스트 기믹 (주파수와 진폭이 높을수록 불안정)
-        let syncRate = 100 - (amplitude/4) - (parseFloat(elFreq.value)/5) + (Math.random()*2);
-        if(syncRate > 99) syncRate = 99.9;
-        if(syncRate < 0) syncRate = 0.0;
-        displaySync.innerText = `${syncRate.toFixed(1)}%`;
-        displaySync.style.color = syncRate < 40 ? '#ff0000' : '#fff';
+        let syncRate = 100 - (amp/4) - (parseFloat(elFreq.value)/5) + (Math.random()*2);
+        if(syncRate > 99) syncRate = 99.9; if(syncRate < 0) syncRate = 0.0;
+        displaySync.innerText = `${syncRate.toFixed(1)}%`; displaySync.style.color = syncRate < 40 ? '#ff0000' : '#fff';
 
-        // 선형 그라데이션 생성 (왼쪽에서 오른쪽으로)
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-        gradient.addColorStop(0, c1);
-        gradient.addColorStop(1, c2);
+        gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
 
-        // --- 3중 파형 그리기 (입체감 부여) ---
-        const waves = [
-            { ampMult: 1.0, freqMult: 1.0, speed: 0.02, width: 4, alpha: 1.0 },
-            { ampMult: 0.6, freqMult: 1.5, speed: 0.03, width: 2, alpha: 0.6 },
-            { ampMult: 1.2, freqMult: 0.8, speed: 0.015, width: 1, alpha: 0.4 }
-        ];
+        const waves = [ { a: 1.0, f: 1.0, s: 0.02, w: 4, al: 1.0 }, { a: 0.6, f: 1.5, s: 0.03, w: 2, al: 0.6 }, { a: 1.2, f: 0.8, s: 0.015, w: 1, al: 0.4 } ];
 
         waves.forEach(w => {
-            ctx.beginPath();
-            ctx.lineWidth = w.width;
-            ctx.strokeStyle = gradient;
-            ctx.globalAlpha = w.alpha;
-            
-            // 네온 글로우 효과
-            ctx.shadowBlur = 15 * w.alpha;
-            ctx.shadowColor = c1;
-
+            ctx.beginPath(); ctx.lineWidth = w.w; ctx.strokeStyle = gradient; ctx.globalAlpha = w.al;
+            ctx.shadowBlur = 15 * w.al; ctx.shadowColor = c1;
             for (let x = 0; x < canvas.width; x += 5) {
-                // 싸인파 수학 공식: y = A * sin(B * x + C)
-                // 중앙으로 갈수록 파장이 커지는 효과 부여 (Envelope)
                 let envelope = Math.sin((x / canvas.width) * Math.PI); 
-                let y = centerY + Math.sin(x * frequency * w.freqMult + time * (w.speed * 100)) * amplitude * w.ampMult * envelope;
-                
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-
-                // 파티클 생성 로직 (현재 위치의 파형 위에서 랜덤 발생)
-                if (Math.random() < (particleLimit / 10000) && w.ampMult === 1.0) {
-                    particles.push(new Particle(x, y, c1, c2));
-                }
+                let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                if (Math.random() < (pLimit / 10000) && w.a === 1.0) particles.push(new Particle(x, y, c1, c2));
             }
             ctx.stroke();
         });
 
-        // 글로벌 알파 및 섀도우 초기화
-        ctx.globalAlpha = 1.0;
-        ctx.shadowBlur = 0;
-
-        // --- 파티클 업데이트 및 그리기 ---
+        ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
         for (let i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].draw(ctx);
-            if (particles[i].life <= 0) {
-                particles.splice(i, 1);
-            }
+            particles[i].update(); particles[i].draw(ctx);
+            if (particles[i].life <= 0) particles.splice(i, 1);
         }
-
-        // 파티클 개수 제한 유지
-        if (particles.length > particleLimit * 2) {
-            particles.splice(0, particles.length - particleLimit * 2);
-        }
-
-        time += 0.05; // 전체 시간 흐름
+        if (particles.length > pLimit * 2) particles.splice(0, particles.length - pLimit * 2);
+        time += 0.05;
     }
+    animateCanvas();
 
-    // 프리셋 적용 함수
     function applyPreset(c1, c2, amp, freq, part) {
-        elCol1.value = c1;
-        elCol2.value = c2;
-        elAmp.value = amp;
-        elFreq.value = freq;
-        elPart.value = part;
+        elCol1.value = c1; elCol2.value = c2; elAmp.value = amp; elFreq.value = freq; elPart.value = part;
     }
 
-    // 애니메이션 시작
-    animate();
+    // 캔버스 자체 이미지 다운로드 함수
+    function downloadResonance() {
+        const link = document.createElement('a');
+        link.download = 'ARCH_CORE_RESONANCE.png';
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        showNotif("WAVEFORM_IMAGE_SAVED");
+    }
 </script>
 </body>
 </html>
