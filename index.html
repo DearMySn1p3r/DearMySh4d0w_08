@@ -61,10 +61,9 @@
         input[type="text"], select, input[type="file"] { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--dimmer); color: #fff; padding: 12px 15px; font-family: inherit; font-size: 12px; transition: 0.2s; border-radius: 4px; }
         input[type="text"]:focus, select:focus { border-color: var(--sys-main); box-shadow: 0 0 10px rgba(255, 255, 255, 0.15); }
         input[type="file"] { padding: 9px; cursor: pointer !important; }
-        
         input[type="range"].zoom-slider { -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; outline: none; margin-top: 5px;}
         input[type="range"].zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-
+        
         .flex-row { display: flex; gap: 12px; }
         .flex-row > div { flex: 1; }
 
@@ -79,35 +78,23 @@
 
         /* --- RIGHT PANEL VIEWS --- */
         #right-id-view { display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); position: relative; flex: 1; height: 100%; padding: 40px; perspective: 1000px; }
-        #right-resonance-view { display: none; flex: 1; position: relative; background: radial-gradient(circle at center, #111 0%, #000 100%); overflow: hidden; height: 100%; }
         
-        canvas { display: block; width: 100%; height: 100%; }
-        .overlay-info { position: absolute; top: 35px; left: 45px; pointer-events: none; }
+        /* ⭐ 파장 뷰 컨테이너 (압축 버그 픽스) ⭐ */
+        #right-resonance-view { display: none; flex: 1; position: relative; background: radial-gradient(circle at center, #111 0%, #000 100%); overflow: hidden; height: 100%; padding: 0; }
+        #coreCanvas { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .overlay-info { position: absolute; top: 35px; left: 45px; pointer-events: none; z-index: 10; }
         .info-value { font-size: 28px; font-weight: 900; font-family: monospace; letter-spacing: 2px; }
 
-        /* --- ⭐ 3D FLIP & NATIVE 4x CARD DESIGN ⭐ --- */
-        /* 화면 표시용 축소 래퍼 (340x540) */
+        /* --- 3D FLIP CARD DESIGN --- */
         .card-scene { width: 340px; height: 540px; perspective: 1200px; z-index: 10; margin-bottom: 20px; }
         .card-flipper { width: 100%; height: 100%; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
         .card-flipper.is-flipped { transform: rotateY(180deg); }
-        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; overflow: hidden; }
         .card-front { transform: rotateY(0deg); }
         .card-back { transform: rotateY(180deg); }
 
-        /* 네이티브 해상도 (1360x2160) - 캡처용 캔버스 소스 */
-        .id-card-native { 
-            width: 1360px; height: 2160px; padding: 8px; 
-            background: linear-gradient(135deg, #eee, #fff, #ccc); 
-            border-radius: 48px; position: absolute; top: 0; left: 0;
-            transform: scale(0.25); transform-origin: top left;
-            box-shadow: 0 80px 200px rgba(0,0,0,0.8), 0 0 120px var(--card-color); 
-        }
-
-        .id-card-inner { 
-            width: 100%; height: 100%; background: #ffffff; 
-            border-radius: 40px; padding: 140px 120px; display: flex; flex-direction: column; position: relative; 
-            overflow: hidden; color: #111; border: 4px solid #eaeaea; 
-        }
+        .id-card-native { width: 1360px; height: 2160px; padding: 8px; background: linear-gradient(135deg, #eee, #fff, #ccc); border-radius: 48px; position: absolute; top: 0; left: 0; transform: scale(0.25); transform-origin: top left; box-shadow: 0 80px 200px rgba(0,0,0,0.8), 0 0 120px var(--card-color); }
+        .id-card-inner { width: 100%; height: 100%; background: #ffffff; border-radius: 40px; padding: 140px 120px; display: flex; flex-direction: column; position: relative; overflow: hidden; color: #111; border: 4px solid #eaeaea; }
         
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; border-bottom: 8px solid #ddd; padding-bottom: 48px; margin-bottom: 100px; }
         .card-title { font-size: 96px; font-weight: 900; letter-spacing: 16px; color: #000; margin-top:-8px;}
@@ -115,13 +102,7 @@
         .card-logo { width: 168px; height: 168px; display: flex; align-items: center; justify-content: center; z-index: 2; overflow: hidden;}
         .card-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-        .card-photo-area { 
-            width: 520px; height: 692px; margin: 0 auto 100px auto; 
-            background-color: #f0f0f0; border: 4px solid #ccc; border-radius: 16px; 
-            display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; 
-            background-repeat: no-repeat; overflow: hidden; cursor: grab !important; 
-            touch-action: none; /* 모바일 드래그 시 튕김 방지 */
-        }
+        .card-photo-area { width: 520px; height: 692px; margin: 0 auto 100px auto; background-color: #f0f0f0; border: 4px solid #ccc; border-radius: 16px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; background-repeat: no-repeat; overflow: hidden; cursor: grab !important; touch-action: none;}
         .card-photo-area:active { cursor: grabbing !important; }
         .photo-placeholder { font-size: 140px; color: #bbb; pointer-events: none; }
 
@@ -143,7 +124,7 @@
         .download-btn-float { flex: 1; padding: 12px 25px; font-size: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--dim); color: var(--accent); font-weight: 700; letter-spacing: 2px; border-radius: 4px; transition: 0.3s; text-align: center; cursor: pointer;}
         .download-btn-float:hover { background: var(--sys-main); color: #000; border-color: var(--sys-main); }
 
-        /* --- 적성 검사 UI (전술 단말기 스타일) --- */
+        /* --- 적성 검사 UI --- */
         .q-text { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 25px; line-height: 1.5; word-break: keep-all; letter-spacing: 1px;}
         .a-btn { width: 100%; text-align: left; padding: 15px 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim); color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; transition: all 0.2s ease; line-height: 1.5; word-break: keep-all; position: relative; overflow: hidden; border-radius: 2px;}
         .a-btn::before { content: '>>'; color: var(--sys-main); font-weight: bold; position: absolute; left: 15px; opacity: 0; transition: 0.2s; transform: translateX(-10px); }
@@ -171,15 +152,15 @@
             .header-status { width: 100%; text-align: center !important; }
             .panel { width: 100%; padding: 20px; flex: none; overflow: visible;}
             #right-id-view { padding: 40px 10px; height: auto; min-height: 80vh; flex: none; }
-            #right-resonance-view { height: 500px; flex: none; }
+            
+            /* 모바일에서 파장 화면 고정 높이 부여 */
+            #right-resonance-view { height: 400px; flex: none; width: 100%; }
             
             .card-scene { transform: scale(0.9); margin-bottom: 10px; }
             .card-controls { width: 90%; }
             .flex-row { flex-direction: column; gap: 10px; }
             .overlay-info { top: 20px; left: 20px; }
             .info-value { font-size: 20px; }
-            
-            /* 모바일에서 방해되는 커서 숨김 */
             #cursor { display: none !important; }
             * { cursor: auto !important; }
             #system-notif { width: 90%; left: 5%; right: auto; top: 20px; text-align: center; }
@@ -353,14 +334,14 @@
             </div>
 
             <div class="input-label" style="text-align: center; border-top:1px dashed var(--dimmer); padding-top:15px; margin-top:5px;">--- ATTRIBUTE PRESETS ---</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px;">
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#FF3300', '#FF8800', 160, 80, 250)">불</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#00A8FF', '#0000FF', 80, 30, 100)">물</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#33FF66', '#008822', 100, 45, 150)">풀</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#FFD700', '#FFFFFF', 140, 130, 200)">번개</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#00FFFF', '#FFFFFF', 110, 60, 180)">바람</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#AADDFF', '#FFFFFF', 50, 15, 80)">얼음</button>
-                <button class="action-btn" style="padding:10px; margin:0; grid-column: span 2;" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)">무속성 (NONE)</button>
+                <button class="action-btn" style="padding:10px; margin:0; grid-column: span 3;" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)">무속성 (NONE)</button>
             </div>
             <button class="action-btn primary-btn" onclick="downloadResonanceHQ()" style="margin-top:20px;">SAVE_HQ_WAVEFORM_IMG</button>
         </div>
@@ -453,7 +434,7 @@
         </div>
     </div>
 
-    <div id="right-resonance-view" class="panel">
+    <div id="right-resonance-view">
         <canvas id="coreCanvas"></canvas>
         <div class="overlay-info">
             <div class="input-label" style="font-size:11px;">CURRENT_SYNC_RATE</div>
@@ -594,7 +575,7 @@
     };
     const attrKeys = Object.keys(attributes);
 
-    // --- 3D 플립 (버그 수정) ---
+    // --- 3D 플립 ---
     let isFrontActive = true;
     function toggleCard() {
         const flipper = document.getElementById('card-flipper');
@@ -683,7 +664,6 @@
         const targetId = isFrontActive ? 'capture-target-front' : 'capture-target-back';
         const originalTarget = document.getElementById(targetId);
         
-        // 가상 컨테이너 생성 (-99999px 격리)
         const exportContainer = document.createElement('div');
         exportContainer.style.position = 'fixed';
         exportContainer.style.left = '-99999px';
@@ -691,7 +671,6 @@
         exportContainer.style.width = '1360px'; 
         exportContainer.style.height = '2160px';
         
-        // 원본 복제 후 CSS 충돌 원인 제거
         const clone = originalTarget.cloneNode(true);
         clone.style.transform = 'none'; 
         clone.style.position = 'static';
@@ -700,7 +679,6 @@
         clone.style.filter = 'none';
         clone.style.willChange = 'auto';
 
-        // 사진 배경 수동 이식
         if (isFrontActive) {
             const clonePhoto = clone.querySelector('.card-photo-area');
             if(clonePhoto) {
@@ -714,7 +692,6 @@
         document.body.appendChild(exportContainer);
 
         try {
-            // 최고해상도 추출
             const canvas = await html2canvas(clone, {
                 scale: Math.max(window.devicePixelRatio * 2, 4),
                 useCORS: true,
@@ -728,11 +705,12 @@
             link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
             showNotif("IMAGE SAVED SUCCESSFULLY!");
+
         } catch (e) {
             showNotif("CAPTURE FAILED");
             console.error(e);
         } finally {
-            document.body.removeChild(exportContainer); 
+            document.body.removeChild(exportContainer);
         }
     };
 
@@ -865,18 +843,30 @@
 
     function resetTest() { document.getElementById('test-result').style.display = 'none'; document.getElementById('test-intro').style.display = 'block'; }
 
-    // --- 공명 시각화 ---
+    // --- ⭐ 실시간 공명 시각화 스크립트 (망막/고해상도 캔버스 완벽 대응) ⭐ ---
     const canvas = document.getElementById('coreCanvas');
     const ctx = canvas.getContext('2d');
     const elAmp = document.getElementById('param-amp'), elFreq = document.getElementById('param-freq'), elPart = document.getElementById('param-part');
     const elCol1 = document.getElementById('color1'), elCol2 = document.getElementById('color2');
     const valAmp = document.getElementById('val-amp'), valFreq = document.getElementById('val-freq'), valPart = document.getElementById('val-part'), displaySync = document.getElementById('display-sync');
 
+    // 스마트폰 레티나 디스플레이의 자글자글한 깨짐을 막기 위해 DPI 값을 곱해서 그립니다.
+    let dpr = window.devicePixelRatio || 1;
+    let logicalWidth = 0, logicalHeight = 0;
+
     function resizeCanvas() {
-        const wrapper = document.querySelector('.resonance-canvas-wrapper');
+        const wrapper = document.getElementById('right-resonance-view');
+        // display:none 상태일 땐 크기 계산이 안되므로 스킵
         if(wrapper && wrapper.offsetWidth > 0) {
-            canvas.width = wrapper.offsetWidth;
-            canvas.height = wrapper.offsetHeight;
+            logicalWidth = wrapper.offsetWidth;
+            logicalHeight = wrapper.offsetHeight;
+            
+            canvas.style.width = logicalWidth + 'px';
+            canvas.style.height = logicalHeight + 'px';
+            
+            // 실제 캔버스의 내부 픽셀을 기기 해상도만큼 뻥튀기합니다.
+            canvas.width = logicalWidth * dpr;
+            canvas.height = logicalHeight * dpr;
         }
     }
     window.addEventListener('resize', resizeCanvas);
@@ -902,14 +892,19 @@
         requestAnimationFrame(animateCanvas);
         if(document.getElementById('tab-resonance').style.display === 'none' && !document.getElementById('tab-resonance').classList.contains('active')) return;
 
+        // 캔버스 클리어 전 픽셀 배율 초기화 (깨짐 방지 필수 로직)
+        ctx.setTransform(1, 0, 0, 1, 0, 0); 
         ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 그릴 때 다시 배율 적용
+        ctx.scale(dpr, dpr); 
 
-        const amp = parseFloat(elAmp.value) * (canvas.height/400); 
+        const amp = parseFloat(elAmp.value) * (logicalHeight/400); 
         const freq = parseFloat(elFreq.value) * 0.001; 
         const pLimit = parseInt(elPart.value);
         const c1 = elCol1.value, c2 = elCol2.value;
-        const centerY = canvas.height / 2;
+        const centerY = logicalHeight / 2;
 
         valAmp.innerText = `${elAmp.value}%`; valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
         
@@ -917,7 +912,7 @@
         if(syncRate > 99) syncRate = 99.9; if(syncRate < 0) syncRate = 0.0;
         displaySync.innerText = `${syncRate.toFixed(1)}%`; displaySync.style.color = syncRate < 40 ? '#ff4444' : '#fff';
 
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        const gradient = ctx.createLinearGradient(0, 0, logicalWidth, 0);
         gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
 
         const waves = [ { a: 1.0, f: 1.0, s: 0.02, w: 3, al: 1.0 }, { a: 0.6, f: 1.5, s: 0.03, w: 1.5, al: 0.6 }, { a: 1.2, f: 0.8, s: 0.015, w: 1, al: 0.4 } ];
@@ -925,8 +920,8 @@
         waves.forEach(w => {
             ctx.beginPath(); ctx.lineWidth = w.w; ctx.strokeStyle = gradient; ctx.globalAlpha = w.al;
             ctx.shadowBlur = 10 * w.al; ctx.shadowColor = c1;
-            for (let x = 0; x < canvas.width; x += 5) {
-                let envelope = Math.sin((x / canvas.width) * Math.PI); 
+            for (let x = 0; x <= logicalWidth; x += 5) {
+                let envelope = Math.sin((x / logicalWidth) * Math.PI); 
                 let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
                 if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 if (Math.random() < (pLimit / 10000) && w.a === 1.0) particles.push(new Particle(x, y, c1, c2));
@@ -942,18 +937,20 @@
         if (particles.length > pLimit) particles.splice(0, particles.length - pLimit);
         time += 0.05;
     }
-    animateCanvas();
+    
+    setTimeout(() => { resizeCanvas(); animateCanvas(); }, 100);
 
     function applyPreset(c1, c2, amp, freq, part) { elCol1.value = c1; elCol2.value = c2; elAmp.value = amp; elFreq.value = freq; elPart.value = part; }
     
-    // --- ⭐ 공명 파형 가로(Landscape) 초고화질 캡처 ---
+    // --- ⭐ 공명 파형 가로(Landscape) 초고화질 비동기 캡처 ---
     window.downloadResonanceHQ = async function() {
         showNotif("GENERATING HIGH-RES WAVEFORM...");
+        
         await document.fonts.ready;
         await new Promise(r => setTimeout(r, 200));
 
         const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = 1920; 
+        exportCanvas.width = 1920;  
         exportCanvas.height = 1080;
         const exportCtx = exportCanvas.getContext('2d');
 
@@ -970,7 +967,8 @@
         const centerY = exportCanvas.height / 2;
 
         const gradient = exportCtx.createLinearGradient(0, 0, exportCanvas.width, 0);
-        gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
+        gradient.addColorStop(0, c1); 
+        gradient.addColorStop(1, c2);
 
         const waves = [ 
             { a: 1.0, f: 1.0, s: 0.02, w: 8, al: 1.0 }, 
@@ -1018,12 +1016,13 @@
 
         try {
             const link = document.createElement('a'); 
-            link.download = 'ARCH_CORE_RESONANCE_HQ.png';
+            link.download = 'ARCH_CORE_RESONANCE_FHD.png';
             link.href = exportCanvas.toDataURL("image/png", 1.0); 
             link.click(); 
-            showNotif("HIGH-RES WAVEFORM SAVED!");
+            showNotif("FHD WAVEFORM SAVED!");
         } catch(err) {
             showNotif("ERROR: CANNOT SAVE IMAGE");
+            console.error(err);
         }
     };
 </script>
