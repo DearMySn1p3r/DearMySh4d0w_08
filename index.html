@@ -125,7 +125,6 @@
             border-radius: 10px; padding: 35px 30px; display: flex; flex-direction: column; position: relative; overflow: hidden; color: #111; 
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
-        /* 도트 패턴 삭제됨 */
         
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; border-bottom: 2px solid #ddd; padding-bottom: 12px; margin-bottom: 25px; }
         .card-title { font-size: 24px; font-weight: 900; letter-spacing: 4px; color: #000; }
@@ -345,6 +344,7 @@
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#FFD700', '#FFFFFF', 140, 130, 200)">번개</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#00FFFF', '#FFFFFF', 110, 60, 180)">바람</button>
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#AADDFF', '#FFFFFF', 50, 15, 80)">얼음</button>
+                <button class="action-btn" style="padding:10px; margin:0; grid-column: span 2;" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)">무속성 (NONE)</button>
             </div>
             <button class="action-btn primary-btn" onclick="downloadResonance()" style="margin-top:20px;">SAVE_WAVEFORM_IMG</button>
         </div>
@@ -599,7 +599,7 @@
                 else assignedRank = ['A-CLASS', 'B-CLASS', 'C-CLASS'][Math.floor(Math.random() * 3)];
             } else {
                 const rVal = Math.random();
-                if(rVal < 0.02) assignedRank = 'SS-CLASS'; // SS등급 2% 극악 확률 추가
+                if(rVal < 0.02) assignedRank = 'SS-CLASS';
                 else if(rVal < 0.12) assignedRank = 'S-CLASS';
                 else if(rVal < 0.4) assignedRank = 'A-CLASS';
                 else if(rVal < 0.8) assignedRank = 'B-CLASS';
@@ -635,7 +635,6 @@
         const cardBack = document.querySelector('.card-back');
         const flipper = document.getElementById('card-flipper');
         
-        // 3D 렌더링 상태에서 뒷면 캡처 시 글씨가 뒤집히거나 짤리는 html2canvas 버그 방지
         let originalTransition = flipper.style.transition;
         if(!isFrontActive) {
             flipper.style.transition = 'none';
@@ -651,15 +650,14 @@
                 link.href = canvas.toDataURL("image/png"); link.click();
                 showNotif("IMAGE_SAVED");
                 
-                // 캡처 후 원상복구
                 if(!isFrontActive) {
                     flipper.style.transform = 'rotateY(180deg)';
                     cardBack.style.transform = 'rotateY(180deg)';
-                    void flipper.offsetWidth; // 강제 리플로우
+                    void flipper.offsetWidth;
                     flipper.style.transition = originalTransition;
                 }
             });
-        }, 50); // DOM 업데이트를 위한 미세한 지연
+        }, 50); 
     }
 
     // --- 미션 생성 스크립트 ---
