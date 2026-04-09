@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARCH_SYSTEM_FINAL_UI</title>
+    <title>ARCH_SYSTEM_HIGH_RES_PRINT_UI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@100;300;500;700&display=swap');
@@ -124,24 +124,12 @@
         .download-btn-float { flex: 1; padding: 12px 25px; font-size: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--dim); color: var(--accent); font-weight: 700; letter-spacing: 2px; border-radius: 4px; transition: 0.3s; text-align: center; cursor: pointer;}
         .download-btn-float:hover { background: var(--sys-main); color: #000; border-color: var(--sys-main); }
 
-        /* --- 적성 검사 UI (홀로그램 전술 단말기 스타일로 완벽 복구) --- */
+        /* --- 적성 검사 UI (전술 단말기 스타일 복구) --- */
         .q-text { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 25px; line-height: 1.5; word-break: keep-all; letter-spacing: 1px;}
-        
-        /* 이 부분이 이전 코드에서 덮어씌워졌던 버튼 스타일입니다. */
-        .a-btn { 
-            width: 100%; text-align: left; padding: 15px 20px; 
-            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim);
-            color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; 
-            transition: all 0.2s ease; line-height: 1.5; word-break: keep-all;
-            position: relative; overflow: hidden; border-radius: 2px;
-        }
+        .a-btn { width: 100%; text-align: left; padding: 15px 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim); color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; transition: all 0.2s ease; line-height: 1.5; word-break: keep-all; position: relative; overflow: hidden; border-radius: 2px;}
         .a-btn::before { content: '>>'; color: var(--sys-main); font-weight: bold; position: absolute; left: 15px; opacity: 0; transition: 0.2s; transform: translateX(-10px); }
-        .a-btn:hover { 
-            background: rgba(255,255,255,0.1); border-color: var(--sys-main); border-left: 3px solid var(--sys-main);
-            color: #fff; padding-left: 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.05);
-        }
+        .a-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--sys-main); border-left: 3px solid var(--sys-main); color: #fff; padding-left: 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.05); }
         .a-btn:hover::before { opacity: 1; transform: translateX(0); }
-        
         .test-progress { font-size: 10px; color: var(--sys-main); letter-spacing: 3px; margin-bottom: 12px; font-weight: bold;}
 
         /* --- 부팅 및 알림 --- */
@@ -229,7 +217,10 @@
             <div class="flex-row">
                 <div class="input-group">
                     <span class="input-label">ROLE (직군)</span>
-                    <select id="agent-role"><option value="SENTINEL">센티넬</option><option value="GUIDE">가이드</option></select>
+                    <select id="agent-role">
+                        <option value="SENTINEL">센티넬</option>
+                        <option value="GUIDE">가이드</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <span class="input-label">RANK (직급)</span>
@@ -248,9 +239,12 @@
                 <span class="input-label">CORE ATTRIBUTE (속성)</span>
                 <select id="agent-attr">
                     <option value="RANDOM">시스템 랜덤 배정</option>
-                    <option value="불">불 (PYRE)</option><option value="물">물 (AQUA)</option>
-                    <option value="풀">풀 (VERDE)</option><option value="번개">번개 (FULMEN)</option>
-                    <option value="바람">바람 (AERO)</option><option value="얼음">얼음 (GLACIES)</option>
+                    <option value="불">불 (PYRE)</option>
+                    <option value="물">물 (AQUA)</option>
+                    <option value="풀">풀 (VERDE)</option>
+                    <option value="번개">번개 (FULMEN)</option>
+                    <option value="바람">바람 (AERO)</option>
+                    <option value="얼음">얼음 (GLACIES)</option>
                     <option value="무속성">무속성 (NONE)</option>
                 </select>
             </div>
@@ -277,14 +271,18 @@
             <div class="flex-row">
                 <div class="input-group">
                     <span class="input-label">ROLE (역할)</span>
-                    <select id="m-agent-role"><option value="센티넬">센티넬</option><option value="가이드">가이드</option></select>
+                    <select id="m-agent-role">
+                        <option value="센티넬">센티넬</option>
+                        <option value="가이드">가이드</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <span class="input-label">ATTRIBUTE (속성)</span>
                     <select id="m-agent-attr">
                         <option value="RANDOM">랜덤</option>
-                        <option value="불">불</option><option value="물">물</option><option value="풀">풀</option>
-                        <option value="번개">번개</option><option value="바람">바람</option><option value="얼음">얼음</option>
+                        <option value="불">불</option><option value="물">물</option>
+                        <option value="풀">풀</option><option value="번개">번개</option>
+                        <option value="바람">바람</option><option value="얼음">얼음</option>
                         <option value="무속성">무속성</option>
                     </select>
                 </div>
@@ -317,7 +315,7 @@
                 </div>
                 <div class="flex-row">
                     <button class="action-btn primary-btn" onclick="applyTestResult()">CREATE_ID</button>
-                    <button class="action-btn" onclick="downloadTestResult()">SAVE_REPORT</button>
+                    <button class="action-btn" onclick="downloadHighRes('capture-test', 'ARCH_APTITUDE')">SAVE_REPORT</button>
                 </div>
                 <button class="action-btn" onclick="resetTest()" style="margin-top:10px; border-color:transparent;">[ RETEST ]</button>
             </div>
@@ -344,7 +342,7 @@
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#AADDFF', '#FFFFFF', 50, 15, 80)">얼음</button>
                 <button class="action-btn" style="padding:10px; margin:0; grid-column: span 2;" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)">무속성 (NONE)</button>
             </div>
-            <button class="action-btn primary-btn" onclick="downloadResonance()" style="margin-top:20px;">SAVE_HQ_WAVEFORM_IMG</button>
+            <button class="action-btn primary-btn" onclick="downloadResonanceHQ()" style="margin-top:20px;">SAVE_HQ_WAVEFORM_IMG</button>
         </div>
     </div>
 
@@ -659,48 +657,83 @@
         }
     }
 
-    // --- 무결점 고해상도 인쇄용 캡처 로직 (3D 버그 완벽 수정본) ---
-    function downloadCard() {
-        showNotif("PROCESSING IMAGE FOR PRINT...");
-        const targetId = isFrontActive ? 'capture-target-front' : 'capture-target-back';
-        const originalTarget = document.getElementById(targetId);
+    // --- ⭐ 궁극의 고화질 우회 캡처 로직 (3D 플립 버그 완벽 해결) ⭐ ---
+    window.downloadHighRes = async function(id, filename) {
+        showNotif("PROCESSING HIGH-RES IMAGE...");
+        await document.fonts.ready;
+        const target = document.getElementById(id);
+        const parent = target.parentElement;
+
+        const isCard = id.includes('capture-target');
         const flipper = document.getElementById('card-flipper');
         const cardBack = document.querySelector('.card-back');
         
-        // 3D 회전을 일시적으로 완전히 풀고 평면으로 전환
-        let originalTransition = flipper.style.transition;
-        if(!isFrontActive) {
+        let origFlipper = { transition: '', transform: '', transformStyle: '' };
+        let origCardBack = { transform: '' };
+
+        // 3D 속성이 적용된 카드일 경우, 캡처 순간에만 3D를 완전히 파괴하여 평면으로 만듭니다.
+        if (isCard) {
+            origFlipper = { 
+                transition: flipper.style.transition, 
+                transform: flipper.style.transform, 
+                transformStyle: flipper.style.transformStyle 
+            };
+            origCardBack = { transform: cardBack.style.transform };
+            
             flipper.style.transition = 'none';
-            flipper.style.transform = ''; // 인라인 스타일 제거
-            flipper.style.transformStyle = '';
-            cardBack.style.transform = '';
-            flipper.classList.remove('is-flipped'); // 임시로 클래스 해제
+            flipper.style.transform = 'none';
+            flipper.style.transformStyle = 'flat';
+            cardBack.style.transform = 'none';
         }
 
-        setTimeout(() => {
-            html2canvas(originalTarget, { 
-                scale: 4, 
-                backgroundColor: '#ffffff',
+        // 제공해주신 캡처 기법: 화면 좌표 고정
+        const prev = { transform: target.style.transform, position: target.style.position, left: target.style.left, top: target.style.top, zIndex: target.style.zIndex };
+        const parentTransform = parent ? parent.style.transform : '';
+
+        target.style.transform = 'none';
+        target.style.position = 'fixed';
+        target.style.left = '0'; 
+        target.style.top = '0'; 
+        target.style.zIndex = '9999';
+        if(parent) parent.style.transform = 'none';
+
+        // 렌더링 대기
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        try {
+            const canvas = await html2canvas(target, {
+                scale: 4, // 300DPI급 초고해상도 (인쇄용)
                 useCORS: true,
-                logging: false 
-            }).then(canvas => {
-                const link = document.createElement('a'); 
-                const side = isFrontActive ? "FRONT" : "BACK";
-                link.download = `ARCH_ID_${side}_PRINT.png`;
-                link.href = canvas.toDataURL("image/png", 1.0); 
-                link.click();
-                showNotif("HIGH-RES IMAGE SAVED!");
-                
-                // 원상복구
-                if(!isFrontActive) {
-                    flipper.classList.add('is-flipped');
-                    void flipper.offsetWidth;
-                    flipper.style.transition = originalTransition;
-                }
-            }).catch(()=> {
-                showNotif("ERROR OCCURRED");
+                backgroundColor: isCard ? '#ffffff' : '#0a0a0a',
+                logging: false
             });
-        }, 100); 
+
+            const link = document.createElement('a');
+            link.download = `${filename}_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+            showNotif("IMAGE SAVED SUCCESSFULLY!");
+
+        } catch (e) {
+            showNotif("CAPTURE FAILED");
+        } finally {
+            // 원상 복구
+            Object.assign(target.style, prev);
+            if(parent) parent.style.transform = parentTransform;
+
+            if (isCard) {
+                flipper.style.transition = origFlipper.transition;
+                flipper.style.transform = origFlipper.transform;
+                flipper.style.transformStyle = origFlipper.transformStyle;
+                cardBack.style.transform = origCardBack.transform;
+            }
+        }
+    };
+
+    function downloadCard() {
+        const targetId = isFrontActive ? 'capture-target-front' : 'capture-target-back';
+        const side = isFrontActive ? 'FRONT' : 'BACK';
+        downloadHighRes(targetId, `ARCH_ID_${side}`);
     }
 
     // --- 미션 생성 스크립트 ---
@@ -807,13 +840,6 @@
 
     function applyTestResult() { switchTab('tab-id', document.querySelector('.tab-btn:nth-child(1)')); finalizeID('UNKNOWN', window.testFinalRole, 'RANDOM', window.testFinalAttr); }
     
-    function downloadTestResult() {
-        showNotif("PROCESSING IMAGE...");
-        html2canvas(document.getElementById('capture-test'), { scale: 3, backgroundColor: '#0a0a0a', logging: false }).then(canvas => {
-            const link = document.createElement('a'); link.download = `ARCH_APTITUDE.png`;
-            link.href = canvas.toDataURL("image/png"); link.click(); showNotif("REPORT SAVED");
-        });
-    }
     function resetTest() { document.getElementById('test-result').style.display = 'none'; document.getElementById('test-intro').style.display = 'block'; }
 
     // --- 공명 시각화 스크립트 ---
@@ -897,13 +923,12 @@
 
     function applyPreset(c1, c2, amp, freq, part) { elCol1.value = c1; elCol2.value = c2; elAmp.value = amp; elFreq.value = freq; elPart.value = part; }
     
-    // --- 공명 파형 고해상도 가로 캡처 로직 ---
-    function downloadResonance() {
+    // --- ⭐ 공명 파형 가로(Landscape) 초고화질 캡처 ---
+    function downloadResonanceHQ() {
         showNotif("GENERATING HIGH-RES WAVEFORM...");
         
-        // 1920x1080 캔버스를 가상으로 생성하여 고화질 렌더링
         const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = 1920;
+        exportCanvas.width = 1920;  // 고정 해상도 가로형 1080p
         exportCanvas.height = 1080;
         const exportCtx = exportCanvas.getContext('2d');
 
