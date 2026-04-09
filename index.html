@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ARCH_SYSTEM_V9_TACTICAL_UI (MOBILE READY)</title>
+    <title>ARCH_SYSTEM_FINAL_UI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@100;300;500;700&display=swap');
@@ -62,7 +62,6 @@
         input[type="text"]:focus, select:focus { border-color: var(--sys-main); box-shadow: 0 0 10px rgba(255, 255, 255, 0.15); }
         input[type="file"] { padding: 9px; cursor: pointer !important; }
         
-        /* 모바일 줌 전용 슬라이더 */
         input[type="range"].zoom-slider { -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; outline: none; margin-top: 5px;}
         input[type="range"].zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #fff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
@@ -95,29 +94,29 @@
         .card-back { transform: rotateY(180deg); }
 
         .id-card-wrapper { width: 100%; height: 100%; padding: 2px; background: linear-gradient(135deg, #eee, #fff, #ccc); border-radius: 12px; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--card-color); }
-        .id-card-inner { width: 100%; height: 100%; background: #ffffff; border-radius: 10px; padding: 35px 30px; display: flex; flex-direction: column; position: relative; overflow: hidden; color: #111; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
+        .id-card-inner { width: 100%; height: 100%; background: #ffffff; border-radius: 10px; padding: 35px 30px; display: flex; flex-direction: column; position: relative; overflow: hidden; color: #111; border: 1px solid #eaeaea; }
         
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; border-bottom: 2px solid #ddd; padding-bottom: 12px; margin-bottom: 25px; }
-        .card-title { font-size: 24px; font-weight: 900; letter-spacing: 4px; color: #000; }
+        .card-title { font-size: 24px; font-weight: 900; letter-spacing: 4px; color: #000; margin-top:-2px;}
         .card-subtitle { font-size: 7px; color: #555; letter-spacing: 1.5px; margin-top: 4px; font-weight: 700; }
         .card-logo { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; z-index: 2; overflow: hidden;}
         .card-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-        .card-photo-area { width: 130px; height: 173px; margin: 0 auto 25px auto; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; background-repeat: no-repeat; box-shadow: inset 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; cursor: grab !important; }
+        .card-photo-area { width: 130px; height: 173px; margin: 0 auto 25px auto; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; background-repeat: no-repeat; overflow: hidden; cursor: grab !important; }
         .card-photo-area:active { cursor: grabbing !important; }
         .photo-placeholder { font-size: 35px; color: #bbb; pointer-events: none; }
 
         .card-data-row { display: flex; flex-direction: column; margin-bottom: 12px; z-index: 1; }
         .data-label { font-size: 8px; color: #888; letter-spacing: 1px; font-weight: 700; }
         .data-value { font-size: 15px; color: #000; font-weight: 900; letter-spacing: 1px; margin-top: 3px; }
-        .data-value.highlight { color: var(--card-color); text-shadow: 0 0 1px rgba(0,0,0,0.1); }
+        .data-value.highlight { color: var(--card-color); }
 
         .card-footer { margin-top: auto; z-index: 1; display: flex; flex-direction: column; gap: 5px;}
         .footer-top { display: flex; justify-content: space-between; align-items: flex-end; }
         .barcode-container { text-align: right; overflow: hidden; }
-        .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 42px; color: #000; margin-right: -10px; opacity: 0.8;}
+        .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 42px; color: #000; margin-right: -10px; }
         
-        .mag-stripe { width: calc(100% + 60px); height: 45px; background: #1a1a1a; margin-left: -30px; margin-top: 15px; margin-bottom: 25px; z-index: 1; box-shadow: inset 0 -2px 5px rgba(0,0,0,0.5);}
+        .mag-stripe { width: calc(100% + 60px); height: 45px; background: #1a1a1a; margin-left: -30px; margin-top: 15px; margin-bottom: 25px; z-index: 1; }
         .back-terms { font-size: 8px; color: #555; line-height: 1.7; text-align: justify; z-index: 1; font-family: 'Noto Sans KR', sans-serif;}
         .sign-area { border-bottom: 1px solid #000; height: 35px; margin-top: 30px; z-index: 1;}
 
@@ -125,12 +124,24 @@
         .download-btn-float { flex: 1; padding: 12px 25px; font-size: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--dim); color: var(--accent); font-weight: 700; letter-spacing: 2px; border-radius: 4px; transition: 0.3s; text-align: center; cursor: pointer;}
         .download-btn-float:hover { background: var(--sys-main); color: #000; border-color: var(--sys-main); }
 
-        /* --- 적성 검사 UI --- */
+        /* --- 적성 검사 UI (홀로그램 전술 단말기 스타일로 완벽 복구) --- */
         .q-text { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 25px; line-height: 1.5; word-break: keep-all; letter-spacing: 1px;}
-        .a-btn { width: 100%; text-align: left; padding: 15px 20px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim); color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; transition: all 0.2s ease; line-height: 1.5; word-break: keep-all; position: relative; overflow: hidden; border-radius: 2px;}
+        
+        /* 이 부분이 이전 코드에서 덮어씌워졌던 버튼 스타일입니다. */
+        .a-btn { 
+            width: 100%; text-align: left; padding: 15px 20px; 
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--dimmer); border-left: 3px solid var(--dim);
+            color: #ccc; margin-bottom: 12px; font-family: var(--font); font-size: 13px; 
+            transition: all 0.2s ease; line-height: 1.5; word-break: keep-all;
+            position: relative; overflow: hidden; border-radius: 2px;
+        }
         .a-btn::before { content: '>>'; color: var(--sys-main); font-weight: bold; position: absolute; left: 15px; opacity: 0; transition: 0.2s; transform: translateX(-10px); }
-        .a-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--sys-main); border-left: 3px solid var(--sys-main); color: #fff; padding-left: 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.05); }
+        .a-btn:hover { 
+            background: rgba(255,255,255,0.1); border-color: var(--sys-main); border-left: 3px solid var(--sys-main);
+            color: #fff; padding-left: 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.05);
+        }
         .a-btn:hover::before { opacity: 1; transform: translateX(0); }
+        
         .test-progress { font-size: 10px; color: var(--sys-main); letter-spacing: 3px; margin-bottom: 12px; font-weight: bold;}
 
         /* --- 부팅 및 알림 --- */
@@ -150,33 +161,22 @@
         @media (max-width: 850px) {
             body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh;}
             #main-wrapper { display: flex; flex-direction: column; height: auto; overflow: visible; }
-            
             header { padding: 0 20px; flex-wrap: wrap; height: auto; padding-top: 15px; padding-bottom: 15px; gap: 10px;}
             .header-title-wrapper { width: 100%; justify-content: center; margin-bottom: 5px; }
             .header-status { width: 100%; text-align: center !important; }
-
             .panel { width: 100%; padding: 20px; flex: none; overflow: visible;}
-            
             #right-id-view { padding: 40px 10px; height: auto; min-height: 80vh; flex: none; }
             #right-resonance-view { height: 500px; flex: none; }
-            
             .card-scene { transform: scale(0.9); margin-bottom: 10px; }
             .card-controls { width: 90%; }
             .flex-row { flex-direction: column; gap: 10px; }
-            
             .overlay-info { top: 20px; left: 20px; }
             .info-value { font-size: 20px; }
-            
-            /* 모바일 터치 환경 커서 제거 */
             #cursor { display: none !important; }
             * { cursor: auto !important; }
-
             #system-notif { width: 90%; left: 5%; right: auto; top: 20px; text-align: center; }
         }
-        
-        @media (max-width: 380px) {
-            .card-scene { transform: scale(0.8); margin-bottom: -10px; margin-top: -30px; }
-        }
+        @media (max-width: 380px) { .card-scene { transform: scale(0.8); margin-bottom: -10px; margin-top: -30px; } }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
 </head>
@@ -229,10 +229,7 @@
             <div class="flex-row">
                 <div class="input-group">
                     <span class="input-label">ROLE (직군)</span>
-                    <select id="agent-role">
-                        <option value="SENTINEL">센티넬</option>
-                        <option value="GUIDE">가이드</option>
-                    </select>
+                    <select id="agent-role"><option value="SENTINEL">센티넬</option><option value="GUIDE">가이드</option></select>
                 </div>
                 <div class="input-group">
                     <span class="input-label">RANK (직급)</span>
@@ -251,12 +248,9 @@
                 <span class="input-label">CORE ATTRIBUTE (속성)</span>
                 <select id="agent-attr">
                     <option value="RANDOM">시스템 랜덤 배정</option>
-                    <option value="불">불 (PYRE)</option>
-                    <option value="물">물 (AQUA)</option>
-                    <option value="풀">풀 (VERDE)</option>
-                    <option value="번개">번개 (FULMEN)</option>
-                    <option value="바람">바람 (AERO)</option>
-                    <option value="얼음">얼음 (GLACIES)</option>
+                    <option value="불">불 (PYRE)</option><option value="물">물 (AQUA)</option>
+                    <option value="풀">풀 (VERDE)</option><option value="번개">번개 (FULMEN)</option>
+                    <option value="바람">바람 (AERO)</option><option value="얼음">얼음 (GLACIES)</option>
                     <option value="무속성">무속성 (NONE)</option>
                 </select>
             </div>
@@ -283,18 +277,14 @@
             <div class="flex-row">
                 <div class="input-group">
                     <span class="input-label">ROLE (역할)</span>
-                    <select id="m-agent-role">
-                        <option value="센티넬">센티넬</option>
-                        <option value="가이드">가이드</option>
-                    </select>
+                    <select id="m-agent-role"><option value="센티넬">센티넬</option><option value="가이드">가이드</option></select>
                 </div>
                 <div class="input-group">
                     <span class="input-label">ATTRIBUTE (속성)</span>
                     <select id="m-agent-attr">
                         <option value="RANDOM">랜덤</option>
-                        <option value="불">불</option><option value="물">물</option>
-                        <option value="풀">풀</option><option value="번개">번개</option>
-                        <option value="바람">바람</option><option value="얼음">얼음</option>
+                        <option value="불">불</option><option value="물">물</option><option value="풀">풀</option>
+                        <option value="번개">번개</option><option value="바람">바람</option><option value="얼음">얼음</option>
                         <option value="무속성">무속성</option>
                     </select>
                 </div>
@@ -316,7 +306,7 @@
                 <div id="a-buttons" style="display:flex; flex-direction:column;"></div>
             </div>
             <div id="test-result" style="display:none;">
-                <div id="capture-test" style="background:#0a0a0a; border:1px solid var(--dimmer); padding:30px; text-align:center; margin-bottom:15px; border-radius:4px;">
+                <div id="capture-test" style="background:#0a0a0a; border:1px solid #e0e0e0; padding:30px; text-align:center; margin-bottom:15px; border-radius:4px;">
                     <div style="font-size:16px; font-weight:900; color:#fff; border-bottom:1px solid var(--dimmer); padding-bottom:10px; margin-bottom:20px; letter-spacing:3px;">OFFICIAL REPORT</div>
                     <div style="font-size:9px; color:#888; margin-bottom:5px; letter-spacing:1px;">ANALYZED POTENTIAL</div>
                     <div id="res-role" style="font-size:22px; font-weight:900; color:#fff; letter-spacing:3px;">SENTINEL</div>
@@ -335,19 +325,9 @@
 
         <div id="tab-resonance" class="tab-content">
             <div style="font-size:12px; font-weight:900; border-bottom:1px solid var(--dimmer); padding-bottom:10px; margin-bottom:15px; letter-spacing:1px;">CORE PARAMETERS</div>
-            
-            <div class="input-group">
-                <span class="input-label">ENERGY AMPLITUDE <span id="val-amp" style="color:#fff;float:right;">100%</span></span>
-                <input type="range" class="zoom-slider" id="param-amp" min="10" max="200" value="100">
-            </div>
-            <div class="input-group">
-                <span class="input-label">RESONANCE FREQUENCY <span id="val-freq" style="color:#fff;float:right;">5.0 Hz</span></span>
-                <input type="range" class="zoom-slider" id="param-freq" min="1" max="150" value="50">
-            </div>
-            <div class="input-group">
-                <span class="input-label">PARTICLE OUTPUT <span id="val-part" style="color:#fff;float:right;">150</span></span>
-                <input type="range" class="zoom-slider" id="param-part" min="0" max="300" value="150">
-            </div>
+            <div class="input-group"><span class="input-label">ENERGY AMPLITUDE <span id="val-amp" style="color:#fff;float:right;">100%</span></span><input type="range" class="zoom-slider" id="param-amp" min="10" max="200" value="100"></div>
+            <div class="input-group"><span class="input-label">RESONANCE FREQUENCY <span id="val-freq" style="color:#fff;float:right;">5.0 Hz</span></span><input type="range" class="zoom-slider" id="param-freq" min="1" max="150" value="50"></div>
+            <div class="input-group"><span class="input-label">PARTICLE OUTPUT <span id="val-part" style="color:#fff;float:right;">150</span></span><input type="range" class="zoom-slider" id="param-part" min="0" max="300" value="150"></div>
             
             <div class="flex-row" style="margin-top:10px;">
                 <div class="input-group"><span class="input-label">WAVE_COLOR_1</span><input type="color" id="color1" value="#00FFFF" style="height:35px; padding:0; border:none; background:transparent;"></div>
@@ -364,7 +344,7 @@
                 <button class="action-btn" style="padding:10px; margin:0;" onclick="applyPreset('#AADDFF', '#FFFFFF', 50, 15, 80)">얼음</button>
                 <button class="action-btn" style="padding:10px; margin:0; grid-column: span 2;" onclick="applyPreset('#AAAAAA', '#FFFFFF', 90, 40, 120)">무속성 (NONE)</button>
             </div>
-            <button class="action-btn primary-btn" onclick="downloadResonance()" style="margin-top:20px;">SAVE_WAVEFORM_IMG</button>
+            <button class="action-btn primary-btn" onclick="downloadResonance()" style="margin-top:20px;">SAVE_HQ_WAVEFORM_IMG</button>
         </div>
     </div>
 
@@ -467,7 +447,6 @@
 <script>
     // 커서 및 시계
     const cursor = document.getElementById('cursor');
-    // 모바일 터치가 아닌 PC 마우스 환경에서만 커서 위치 업데이트
     document.addEventListener('mousemove', (e) => { 
         if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
     });
@@ -476,7 +455,7 @@
     
     setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
 
-    // --- 부팅 화면 처리 ---
+    // 부팅 화면 처리
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { 
             const bootScreen = document.getElementById('boot-screen');
@@ -500,16 +479,15 @@
         setTimeout(() => { notif.style.display = 'none'; }, 3000);
     }
 
-    // 탭 전환 (모바일 스크롤 초기화 기능 포함)
+    // 탭 전환
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
 
-        // 모바일 환경일 경우 스크롤을 맨 위로 올려줌
         if(window.innerWidth <= 850) {
-            document.body.scrollTop = 0; // For Safari
-            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            document.body.scrollTop = 0; 
+            document.documentElement.scrollTop = 0; 
         }
 
         if(tabId === 'tab-resonance') {
@@ -522,7 +500,7 @@
         }
     }
 
-    // --- 사진 업로드, 줌 슬라이더, 드래그/터치 이동 기능 ---
+    // 사진 업로드, 줌 슬라이더, 드래그/터치 이동 기능
     const photoDisplay = document.getElementById('photo-display');
     const zoomSlider = document.getElementById('photo-zoom');
     let bgPosX = 50, bgPosY = 50, bgSize = 100;
@@ -539,13 +517,12 @@
                 photoDisplay.style.backgroundPosition = '50% 50%';
                 document.getElementById('photo-placeholder').style.display = 'none';
                 bgPosX = 50; bgPosY = 50; bgSize = 100;
-                zoomSlider.value = 100; // 사진이 바뀌면 슬라이더도 초기화
+                zoomSlider.value = 100; 
             }
             reader.readAsDataURL(file);
         }
     }
 
-    // 모바일 줌을 위한 슬라이더 이벤트
     zoomSlider.addEventListener('input', (e) => {
         if(photoDisplay.style.backgroundImage) {
             bgSize = e.target.value;
@@ -553,7 +530,6 @@
         }
     });
 
-    // PC 마우스 이동
     photoDisplay.addEventListener('mousedown', (e) => {
         if(photoDisplay.style.backgroundImage) { isDraggingPhoto = true; startX = e.clientX; startY = e.clientY; }
     });
@@ -566,7 +542,6 @@
     });
     document.addEventListener('mouseup', () => { isDraggingPhoto = false; });
     
-    // 모바일 터치 이동
     photoDisplay.addEventListener('touchstart', (e) => {
         if(photoDisplay.style.backgroundImage && e.touches.length === 1) {
             isDraggingPhoto = true;
@@ -583,13 +558,12 @@
     }, {passive: false});
     document.addEventListener('touchend', () => { isDraggingPhoto = false; });
 
-    // PC용 휠 줌 (옵션)
     photoDisplay.addEventListener('wheel', (e) => {
         if(photoDisplay.style.backgroundImage) {
             e.preventDefault(); 
             bgSize += e.deltaY * -0.1;
             bgSize = Math.max(20, Math.min(300, bgSize)); 
-            zoomSlider.value = bgSize; // 슬라이더 연동
+            zoomSlider.value = bgSize; 
             photoDisplay.style.backgroundSize = `${bgSize}%`;
         }
     });
@@ -627,15 +601,14 @@
         
         if(!isFrontActive) toggleCard();
 
-        term.innerHTML += `<br>>> COMMENCING_DATA_PROCESSING FOR [${nameInput.toUpperCase()}]...<br>`;
+        term.innerHTML += `<br>>> PROCESSING [${nameInput.toUpperCase()}]...<br>`;
         term.scrollTop = term.scrollHeight;
 
-        let steps = [ ">> WRITING_SECURE_DATA...", ">> ENCODING_IDENTIFIER..." ];
         let count = 0;
         let interval = setInterval(() => {
-            if (count < steps.length) { term.innerHTML += `${steps[count]}<br>`; term.scrollTop = term.scrollHeight; count++; } 
+            if (count < 2) { term.innerHTML += `>> ENCODING_DATA...<br>`; term.scrollTop = term.scrollHeight; count++; } 
             else { clearInterval(interval); finalizeID(nameInput, role, isRandom ? 'RANDOM' : manualRank, isRandom ? 'RANDOM' : manualAttr); }
-        }, 400);
+        }, 300);
     }
 
     function finalizeID(name, role, reqRank, reqAttr) {
@@ -666,7 +639,7 @@
         document.getElementById('m-agent-role').value = role === 'GUIDE' ? '가이드' : '센티넬';
         document.getElementById('m-agent-attr').value = attrKey;
 
-        term.innerHTML += `<span class="terminal-highlight">>> ID_CARD_GENERATED!</span><br>`;
+        term.innerHTML += `<span class="terminal-highlight">>> ID_CARD_ISSUED!</span><br>`;
         term.scrollTop = term.scrollHeight;
         root.style.setProperty('--card-color', assignedAttr.color);
 
@@ -675,12 +648,10 @@
         document.getElementById('c-rank').innerText = assignedRank;
         document.getElementById('c-attr').innerText = assignedAttr.name;
         document.getElementById('c-wave').innerText = `${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}`.toUpperCase();
-        document.getElementById('c-barcode').innerText = `*${Math.random().toString(36).substr(2, 6).toUpperCase()}*`;
-
+        
         showNotif("ID_CARD_READY");
         isScanning = false;
 
-        // 모바일 자동 스크롤
         if(window.innerWidth <= 850) {
             setTimeout(() => {
                 document.getElementById('card-scroll-target').scrollIntoView({behavior: 'smooth', block: 'center'});
@@ -688,45 +659,55 @@
         }
     }
 
-    // --- 캡처 시 3D 버그 방지 로직 ---
+    // --- 무결점 고해상도 인쇄용 캡처 로직 (3D 버그 완벽 수정본) ---
     function downloadCard() {
+        showNotif("PROCESSING IMAGE FOR PRINT...");
         const targetId = isFrontActive ? 'capture-target-front' : 'capture-target-back';
-        const target = document.getElementById(targetId);
-        showNotif("PROCESSING_IMAGE...");
-        
-        const cardBack = document.querySelector('.card-back');
+        const originalTarget = document.getElementById(targetId);
         const flipper = document.getElementById('card-flipper');
+        const cardBack = document.querySelector('.card-back');
         
+        // 3D 회전을 일시적으로 완전히 풀고 평면으로 전환
         let originalTransition = flipper.style.transition;
         if(!isFrontActive) {
             flipper.style.transition = 'none';
-            flipper.style.transform = 'rotateY(0deg)';
-            cardBack.style.transform = 'rotateY(0deg)';
+            flipper.style.transform = ''; // 인라인 스타일 제거
+            flipper.style.transformStyle = '';
+            cardBack.style.transform = '';
+            flipper.classList.remove('is-flipped'); // 임시로 클래스 해제
         }
 
         setTimeout(() => {
-            html2canvas(target, { scale: 2, backgroundColor: '#ffffff', logging: false }).then(canvas => {
+            html2canvas(originalTarget, { 
+                scale: 4, 
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false 
+            }).then(canvas => {
                 const link = document.createElement('a'); 
                 const side = isFrontActive ? "FRONT" : "BACK";
-                link.download = `ARCH_ID_${side}.png`;
-                link.href = canvas.toDataURL("image/png"); link.click();
-                showNotif("IMAGE_SAVED");
+                link.download = `ARCH_ID_${side}_PRINT.png`;
+                link.href = canvas.toDataURL("image/png", 1.0); 
+                link.click();
+                showNotif("HIGH-RES IMAGE SAVED!");
                 
+                // 원상복구
                 if(!isFrontActive) {
-                    flipper.style.transform = 'rotateY(180deg)';
-                    cardBack.style.transform = 'rotateY(180deg)';
+                    flipper.classList.add('is-flipped');
                     void flipper.offsetWidth;
                     flipper.style.transition = originalTransition;
                 }
+            }).catch(()=> {
+                showNotif("ERROR OCCURRED");
             });
-        }, 50); 
+        }, 100); 
     }
 
     // --- 미션 생성 스크립트 ---
     const mType = ['전술 섬멸 작전', '구역 탐색 및 정찰', '거점 방어 및 구출', '비상 안정화 프로토콜', '하모니 정기 상담'];
     const mLoc = ['제4구역 폐허', '아이기스 외곽 방어선', '하늘정원 하층부', '특별통제 훈련장 돔', '비상 안정화실(STAB)'];
     const mTarget = ['S급 괴수 군락 진압', '미확인 파장 발생원 추적', '폭주 임박 개체 구속', '파트너 간 공명률 테스트', '거점 침투 세력 섬멸'];
-    const mGuide = ["능력 사용 시 오염도 급증 주의. 즉각적인 밀착 가이딩을 요함.", "적대 세력 조우 시 생포를 우선으로 하되, 파트너의 판단에 따를 것.", "감각 과부하가 예상됨. 작전 전 가이딩 농도 80% 이상 권장.", "돌발 상황 발생 시 현장 요원 재량으로 진압 허가.", "과도한 속성 버프 사용을 자제하고 파장 안정화에 집중할 것."];
+    const mGuide = ["오염도 급증 주의. 밀착 가이딩 요함.", "적대 세력 조우 시 생포를 우선.", "감각 과부하 예상. 가이딩 농도 80% 유지.", "돌발 상황 발생 시 현장 요원 재량 진압.", "과도한 속성 버프 자제 요망."];
 
     function generateMission() {
         let name = document.getElementById('m-agent-name').value.trim() || "미상_요원";
@@ -742,25 +723,25 @@
         const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '.');
         let partnerText = partner ? `\n■ 동행 파트너: ${partner}` : "";
 
-        const oocText = `[ 이전 RP 중지. 새로운 상황 전개. ]\n\n[ ARCH CENTRAL COMMAND : DAILY DISPATCH ]\n■ 발급일자: ${dateStr}\n■ 투입요원: ${name} (${role} / ${attr})${partnerText}\n■ 작전지역: ${l}\n■ 임무분류: ${t}\n■ 작전목표: ${tg}\n■ 지침사항: ${g}\n\n[ OOC : 위 임무 로그를 기반으로 역극을 시작합니다. ]`;
+        const oocText = `[ 이전 RP 중지. 새로운 상황 전개. ]\n\n[ ARCH CENTRAL COMMAND : DISPATCH ]\n■ 발급일자: ${dateStr}\n■ 투입요원: ${name} (${role}/${attr})${partnerText}\n■ 작전지역: ${l}\n■ 임무분류: ${t}\n■ 작전목표: ${tg}\n■ 지침사항: ${g}\n\n[ OOC : 위 로그를 기반으로 역극을 시작합니다. ]`;
 
         document.getElementById('ooc-output').innerText = oocText;
-        showNotif("MISSION_DISPATCHED");
+        showNotif("PROTOCOL GENERATED");
     }
 
     function copyOOC() {
         const text = document.getElementById('ooc-output').innerText;
-        if(text.includes('대기 중...')) return showNotif("ERROR: NO_DATA");
-        navigator.clipboard.writeText(text).then(() => { showNotif("COPIED_TO_CLIPBOARD"); });
+        if(text.includes('대기 중...')) return showNotif("NO DATA TO COPY");
+        navigator.clipboard.writeText(text).then(() => { showNotif("COPIED TO CLIPBOARD"); }).catch(()=>{ showNotif("COPY FAILED"); });
     }
 
     // --- 적성 검사 스크립트 ---
     const testData = [
-        { q: "훈련 중 동료가 치명상을 입었다. 당신의 행동은?", a: [ { t: "동료에게 다가가 파장을 안정화시킨다.", s: {guide:2, 물:1, 풀:1} }, { t: "적을 찾아내고 반격한다.", s: {sentinel:2, 불:1, 번개:1} }, { t: "방어막을 전개하여 피해를 차단한다.", s: {sentinel:1, guide:1, 얼음:2} } ] },
-        { q: "무의식을 가장 잘 표현하는 감정은?", a: [ { t: "분노와 파괴 충동", s: {sentinel:2, 불:2} }, { t: "모든 것을 포용하고 싶은 평온함", s: {guide:2, 물:2, 무속성:1} }, { t: "벗어나고 싶은 호기심과 자유", s: {sentinel:1, 바람:2} } ] },
-        { q: "거대한 장벽에 가로막혔을 때, 당신은?", a: [ { t: "장벽을 산산조각 낸다.", s: {sentinel:2, 번개:1, 불:1} }, { t: "바람이나 지형을 이용해 우회한다.", s: {바람:2, 풀:1} }, { t: "틈새를 찾아 구조를 해체한다.", s: {guide:1, 무속성:2} }, { t: "얼려버려 무력화한다.", s: {얼음:2} } ] },
-        { q: "고된 임무를 마친 후 당신이 머무는 곳은?", a: [ { t: "신체를 극한으로 몰아넣는 훈련장", s: {sentinel:2, 불:1} }, { t: "조용하고 따뜻한 정원", s: {guide:1, 풀:2} }, { t: "타인과 교감하는 라운지", s: {guide:2, 무속성:1} } ] },
-        { q: "당신에게 '능력'이란?", a: [ { t: "혼돈을 잠재우는 무기", s: {sentinel:2, 번개:2} }, { t: "상처받은 자들을 지키는 방패", s: {guide:1, 물:1, 얼음:1} }, { t: "나의 가치를 증명하는 수단", s: {sentinel:1, guide:1, 무속성:1} } ] }
+        { q: "훈련 중 동료가 치명상을 입었다. 행동은?", a: [ { t: "다가가 파장을 안정화시킨다.", s: {guide:2, 물:1, 풀:1} }, { t: "적을 찾아내고 반격한다.", s: {sentinel:2, 불:1, 번개:1} }, { t: "방어막을 전개하여 보호한다.", s: {sentinel:1, guide:1, 얼음:2} } ] },
+        { q: "무의식을 가장 잘 표현하는 감정은?", a: [ { t: "분노와 파괴 충동", s: {sentinel:2, 불:2} }, { t: "모든 것을 포용하는 평온함", s: {guide:2, 물:2, 무속성:1} }, { t: "어디로든 벗어나는 호기심", s: {sentinel:1, 바람:2} } ] },
+        { q: "거대한 장벽에 가로막혔을 때, 당신은?", a: [ { t: "산산조각 낸다.", s: {sentinel:2, 번개:1, 불:1} }, { t: "지형을 이용해 우회한다.", s: {바람:2, 풀:1} }, { t: "틈새를 찾아 해체한다.", s: {guide:1, 무속성:2} }, { t: "얼려버려 무력화한다.", s: {얼음:2} } ] },
+        { q: "고된 임무를 마친 후 머무는 곳은?", a: [ { t: "극한의 훈련장", s: {sentinel:2, 불:1} }, { t: "조용하고 따뜻한 정원", s: {guide:1, 풀:2} }, { t: "타인과 교감하는 라운지", s: {guide:2, 무속성:1} } ] },
+        { q: "당신에게 '능력'이란?", a: [ { t: "혼돈을 잠재우는 무기", s: {sentinel:2, 번개:2} }, { t: "상처받은 자들을 지키는 방패", s: {guide:1, 물:1, 얼음:1} }, { t: "가치를 증명하는 수단", s: {sentinel:1, guide:1, 무속성:1} } ] }
     ];
     let currentQ = 0; let scores = { sentinel:0, guide:0, 불:0, 물:0, 풀:0, 번개:0, 바람:0, 얼음:0, 무속성:0 };
 
@@ -817,7 +798,7 @@
         document.getElementById('res-attr').innerText = attributes[finalAttr].name;
         document.getElementById('res-attr').style.color = attributes[finalAttr].color;
         document.getElementById('res-dept').innerText = dept;
-        showNotif("EVALUATION_COMPLETE");
+        showNotif("EVALUATION COMPLETE");
 
         if(window.innerWidth <= 850) {
             setTimeout(() => { document.getElementById('test-result').scrollIntoView({behavior: 'smooth'}); }, 300);
@@ -825,10 +806,12 @@
     }
 
     function applyTestResult() { switchTab('tab-id', document.querySelector('.tab-btn:nth-child(1)')); finalizeID('UNKNOWN', window.testFinalRole, 'RANDOM', window.testFinalAttr); }
+    
     function downloadTestResult() {
-        html2canvas(document.getElementById('capture-test'), { scale: 2, backgroundColor: '#0a0a0a', logging: false }).then(canvas => {
+        showNotif("PROCESSING IMAGE...");
+        html2canvas(document.getElementById('capture-test'), { scale: 3, backgroundColor: '#0a0a0a', logging: false }).then(canvas => {
             const link = document.createElement('a'); link.download = `ARCH_APTITUDE.png`;
-            link.href = canvas.toDataURL("image/png"); link.click(); showNotif("REPORT_SAVED");
+            link.href = canvas.toDataURL("image/png"); link.click(); showNotif("REPORT SAVED");
         });
     }
     function resetTest() { document.getElementById('test-result').style.display = 'none'; document.getElementById('test-intro').style.display = 'block'; }
@@ -841,9 +824,10 @@
     const valAmp = document.getElementById('val-amp'), valFreq = document.getElementById('val-freq'), valPart = document.getElementById('val-part'), displaySync = document.getElementById('display-sync');
 
     function resizeCanvas() {
-        if(document.getElementById('right-resonance-view').style.display !== 'none') {
-            canvas.width = document.getElementById('right-resonance-view').clientWidth;
-            canvas.height = document.getElementById('right-resonance-view').clientHeight;
+        const wrapper = document.querySelector('.resonance-canvas-wrapper');
+        if(wrapper && wrapper.offsetWidth > 0) {
+            canvas.width = wrapper.offsetWidth;
+            canvas.height = wrapper.offsetHeight;
         }
     }
     window.addEventListener('resize', resizeCanvas);
@@ -851,7 +835,7 @@
     let time = 0; let particles = [];
     class Particle {
         constructor(x, y, color1, color2) {
-            this.x = x; this.y = y; this.size = Math.random() * 3 + 1;
+            this.x = x; this.y = y; this.size = Math.random() * 2 + 1;
             this.speedX = (Math.random() - 0.5) * 2; this.speedY = (Math.random() - 1) * 3 - 1;
             this.life = 1.0; this.decay = Math.random() * 0.02 + 0.01;
             this.color = Math.random() > 0.5 ? color1 : color2;
@@ -859,7 +843,7 @@
         update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; }
         draw(ctx) {
             ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.color;
-            ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+            ctx.shadowBlur = 8; ctx.shadowColor = this.color;
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
         }
@@ -867,29 +851,31 @@
 
     function animateCanvas() {
         requestAnimationFrame(animateCanvas);
-        if(document.getElementById('right-resonance-view').style.display === 'none') return;
+        if(document.getElementById('tab-resonance').style.display === 'none' && !document.getElementById('tab-resonance').classList.contains('active')) return;
 
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const amp = parseFloat(elAmp.value), freq = parseFloat(elFreq.value) * 0.0005, pLimit = parseInt(elPart.value);
+        const amp = parseFloat(elAmp.value) * (canvas.height/400); 
+        const freq = parseFloat(elFreq.value) * 0.001; 
+        const pLimit = parseInt(elPart.value);
         const c1 = elCol1.value, c2 = elCol2.value;
         const centerY = canvas.height / 2;
 
-        valAmp.innerText = `${amp}%`; valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
+        valAmp.innerText = `${elAmp.value}%`; valFreq.innerText = `${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz`; valPart.innerText = pLimit;
         
-        let syncRate = 100 - (amp/4) - (parseFloat(elFreq.value)/5) + (Math.random()*2);
+        let syncRate = 100 - (elAmp.value/4) - (parseFloat(elFreq.value)/5) + (Math.random()*2);
         if(syncRate > 99) syncRate = 99.9; if(syncRate < 0) syncRate = 0.0;
-        displaySync.innerText = `${syncRate.toFixed(1)}%`; displaySync.style.color = syncRate < 40 ? '#ff0000' : '#fff';
+        displaySync.innerText = `${syncRate.toFixed(1)}%`; displaySync.style.color = syncRate < 40 ? '#ff4444' : '#fff';
 
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
         gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
 
-        const waves = [ { a: 1.0, f: 1.0, s: 0.02, w: 4, al: 1.0 }, { a: 0.6, f: 1.5, s: 0.03, w: 2, al: 0.6 }, { a: 1.2, f: 0.8, s: 0.015, w: 1, al: 0.4 } ];
+        const waves = [ { a: 1.0, f: 1.0, s: 0.02, w: 3, al: 1.0 }, { a: 0.6, f: 1.5, s: 0.03, w: 1.5, al: 0.6 }, { a: 1.2, f: 0.8, s: 0.015, w: 1, al: 0.4 } ];
 
         waves.forEach(w => {
             ctx.beginPath(); ctx.lineWidth = w.w; ctx.strokeStyle = gradient; ctx.globalAlpha = w.al;
-            ctx.shadowBlur = 15 * w.al; ctx.shadowColor = c1;
+            ctx.shadowBlur = 10 * w.al; ctx.shadowColor = c1;
             for (let x = 0; x < canvas.width; x += 5) {
                 let envelope = Math.sin((x / canvas.width) * Math.PI); 
                 let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
@@ -904,15 +890,88 @@
             particles[i].update(); particles[i].draw(ctx);
             if (particles[i].life <= 0) particles.splice(i, 1);
         }
-        if (particles.length > pLimit * 2) particles.splice(0, particles.length - pLimit * 2);
+        if (particles.length > pLimit) particles.splice(0, particles.length - pLimit);
         time += 0.05;
     }
     animateCanvas();
 
     function applyPreset(c1, c2, amp, freq, part) { elCol1.value = c1; elCol2.value = c2; elAmp.value = amp; elFreq.value = freq; elPart.value = part; }
+    
+    // --- 공명 파형 고해상도 가로 캡처 로직 ---
     function downloadResonance() {
-        const link = document.createElement('a'); link.download = 'ARCH_CORE_RESONANCE.png';
-        link.href = canvas.toDataURL("image/png"); link.click(); showNotif("WAVEFORM_IMAGE_SAVED");
+        showNotif("GENERATING HIGH-RES WAVEFORM...");
+        
+        // 1920x1080 캔버스를 가상으로 생성하여 고화질 렌더링
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = 1920;
+        exportCanvas.height = 1080;
+        const exportCtx = exportCanvas.getContext('2d');
+
+        exportCtx.fillStyle = '#080808';
+        exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+        exportCtx.fillStyle = 'rgba(255,255,255,0.03)';
+        for(let i=0; i<exportCanvas.height; i+=8) exportCtx.fillRect(0, i, exportCanvas.width, 2);
+
+        const amp = parseFloat(elAmp.value) * (exportCanvas.height/400); 
+        const freq = parseFloat(elFreq.value) * 0.001; 
+        const pLimit = parseInt(elPart.value);
+        const c1 = elCol1.value, c2 = elCol2.value;
+        const centerY = exportCanvas.height / 2;
+
+        const gradient = exportCtx.createLinearGradient(0, 0, exportCanvas.width, 0);
+        gradient.addColorStop(0, c1); 
+        gradient.addColorStop(1, c2);
+
+        const waves = [ 
+            { a: 1.0, f: 1.0, s: 0.02, w: 8, al: 1.0 }, 
+            { a: 0.6, f: 1.5, s: 0.03, w: 4, al: 0.6 }, 
+            { a: 1.2, f: 0.8, s: 0.015, w: 2, al: 0.4 } 
+        ];
+
+        waves.forEach(w => {
+            exportCtx.beginPath(); 
+            exportCtx.lineWidth = w.w; 
+            exportCtx.strokeStyle = gradient; 
+            exportCtx.globalAlpha = w.al;
+            exportCtx.shadowBlur = 30 * w.al; 
+            exportCtx.shadowColor = c1;
+            
+            for (let x = 0; x <= exportCanvas.width; x += 5) {
+                let envelope = Math.sin((x / exportCanvas.width) * Math.PI); 
+                let y = centerY + Math.sin(x * freq * w.f + time * (w.s * 100)) * amp * w.a * envelope;
+                if (x === 0) exportCtx.moveTo(x, y); 
+                else exportCtx.lineTo(x, y);
+            }
+            exportCtx.stroke();
+        });
+
+        // 텍스트 오버레이
+        exportCtx.globalAlpha = 1.0;
+        exportCtx.shadowBlur = 0;
+        exportCtx.fillStyle = '#ffffff';
+        exportCtx.font = 'bold 50px "Orbitron", sans-serif';
+        exportCtx.fillText('ARCH CORE RESONANCE ANALYSIS', 60, 90);
+        
+        exportCtx.fillStyle = c1;
+        exportCtx.font = 'bold 30px "Orbitron", sans-serif';
+        let syncRate = document.getElementById('display-sync').innerText;
+        exportCtx.fillText(`SYNC RATE: ${syncRate}`, 60, 150);
+
+        exportCtx.fillStyle = '#aaaaaa';
+        exportCtx.font = '24px "Orbitron", sans-serif';
+        exportCtx.fillText(`AMPLITUDE: ${elAmp.value}%  |  FREQUENCY: ${(parseFloat(elFreq.value) / 10).toFixed(1)} Hz  |  OUTPUT: ${pLimit}`, 60, 200);
+
+        exportCtx.textAlign = "right";
+        exportCtx.fillStyle = "rgba(255,255,255,0.2)";
+        exportCtx.font = 'bold 80px "Orbitron", sans-serif';
+        exportCtx.fillText('A.E.G.I.S', exportCanvas.width - 60, exportCanvas.height - 60);
+
+        const link = document.createElement('a'); 
+        link.download = 'ARCH_CORE_RESONANCE_HQ.png';
+        link.href = exportCanvas.toDataURL("image/png"); 
+        link.click(); 
+        showNotif("HIGH-RES WAVEFORM SAVED!");
     }
 </script>
 </body>
